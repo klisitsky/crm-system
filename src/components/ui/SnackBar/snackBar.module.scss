@@ -1,0 +1,32 @@
+.snackBarContainer {
+  display: flex;
+  justify-content: space-between;
+  min-width: 150px;
+  width: 300px;
+  padding: 10px 15px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  background-color: var(--color-light-100);
+  border-radius: 5px;
+  color: var(--color-danger-900);
+  position: fixed;
+  bottom: 25px;
+  left: 25px;
+  transition: all 0.4s ease;
+  opacity: 1;
+  box-shadow: 0 0 10px 1px var(--color-light-500);
+}
+
+.snackBarCloseBtn {
+  background-color: transparent;
+  color: var(--color-light-900);
+  &:hover {
+    background-color: var(--color-light-300);
+  }
+}
+
+.close {
+  opacity: 0;
+  bottom: -25px;
+  height: 0px;
+}
