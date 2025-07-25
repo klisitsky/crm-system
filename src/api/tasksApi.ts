@@ -26,7 +26,7 @@ const BASE_URL = "https://easydev.club/api/v1/";
 
 const errorStatuses: Record<string, string> = {
   "400": "Некорректный запрос",
-  "404": "Такой задачи нет",
+  "404": "Такой задачи нет. Обновите страницу",
   "500": "Ошибка сервера",
 };
 

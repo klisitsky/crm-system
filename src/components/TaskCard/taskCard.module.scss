@@ -1,41 +1,6 @@
-.container {
-  min-height: 30px;
-  max-width: 300px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  background-color: var(--color-light-100);
-  margin: 10px 5px;
-  border-radius: 5px;
-  cursor: pointer;
-  box-shadow: 0 0 5px 1px var(--color-light-500);
-}
-
-.checkboxTitleContainer {
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-
-.checkboxTaskStatus {
-  margin-right: 8px;
-}
-
-.input {
-  max-width: 150px;
-}
-
-.taskValue {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .taskIsDone {
   text-decoration: line-through;
-  
-  color: var(--color-light-500);
-  
+  color: var(--color-light-500);  
 }
 
 .errorMessage {

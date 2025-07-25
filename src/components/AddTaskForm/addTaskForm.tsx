@@ -1,17 +1,18 @@
 import type { ChangeEvent } from "react";
 import { useCallback, useState } from "react";
 import { getInputErrorMessage } from "../../utils/getInputErrorMessage";
-import { Button } from "../ui/Button/button";
-import { Input } from "../ui/Input/input";
-import { Typography } from "../ui/Typography/typography";
-import s from "./addTaskForm.module.scss";
+import { Button, Flex, Typography } from "antd";
+import { Input } from "antd";
 
 interface AddTaskForm {
   addNewTask: (newTitle: string) => void;
   isLoading: boolean;
 }
 
-export const AddTaskForm: React.FC<AddTaskForm> = ({ addNewTask, isLoading }) => {
+export const AddTaskForm: React.FC<AddTaskForm> = ({
+  addNewTask,
+  isLoading,
+}) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -26,9 +27,9 @@ export const AddTaskForm: React.FC<AddTaskForm> = ({ addNewTask, isLoading }) =>
   const handleAddTask = useCallback(async () => {
     const errorMessageValue = getInputErrorMessage(inputValue);
     if (!errorMessageValue) {
-        addNewTask(inputValue);
-        setInputValue("");
-        setErrorMessage("");
+      addNewTask(inputValue);
+      setInputValue("");
+      setErrorMessage("");
     } else {
       setErrorMessage(errorMessageValue);
     }
@@ -36,24 +37,31 @@ export const AddTaskForm: React.FC<AddTaskForm> = ({ addNewTask, isLoading }) =>
 
   return (
     <>
-      <div className={s.container}>
-        <Input
-          value={inputValue}
-          onChange={handleChangeInputValue}
-          errorMessage={errorMessage}
-          placeholder="Task To Be Done..."
-          className={s.addTaskInput}
-          disabled={isLoading}
-        />
+      <Flex gap="large">
+        <Flex vertical align="start">
+          <Input
+            value={inputValue}
+            onChange={handleChangeInputValue}
+            placeholder="Task To Be Done..."
+            disabled={isLoading}
+            status={errorMessage ? "error" : ""}
+            variant="underlined"
+            size="middle"
+            style={{ backgroundColor: "transparent" }}
+          />
+          {errorMessage && (
+            <Typography.Text type="danger">{errorMessage}</Typography.Text>
+          )}
+        </Flex>
         <Button
-          variant="primary"
+          type={"primary"}
           onClick={handleAddTask}
           disabled={isLoading}
-          className={s.addButton}
+          style={{ width: "150px" }}
         >
-          <Typography>Add</Typography>
+          Add
         </Button>
-      </div>
+      </Flex>
     </>
   );
 };

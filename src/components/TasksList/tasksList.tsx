@@ -1,6 +1,8 @@
-import { type Task } from "../../api/tasksApi";
+import { Typography } from "antd";
+import Flex from "antd/es/flex";
 import { TaskCard } from "../TaskCard/taskCard";
-import s from "./taskList.module.scss";
+import type { Task } from "../../api/tasksApi";
+
 
 interface TasksList {
   tasks: Task[];
@@ -9,21 +11,29 @@ interface TasksList {
   deleteTask: (taskId: number) => void;
 }
 
-export const TasksList: React.FC<TasksList> = ({ tasks, isLoading, updateTask, deleteTask }) => {
-  return tasks?.length ? (
-    <ul className={s.list}>
+export const TasksList: React.FC<TasksList> = ({
+  tasks,
+  isLoading,
+  updateTask,
+  deleteTask,
+}) => {
+  return tasks.length ? (
+    <Flex gap="small" vertical>
       {tasks.map((task) => {
         return (
-          <li className={s.listItem} key={task.id}>
-            <TaskCard isLoading={isLoading} updateTask={updateTask} deleteTask={deleteTask} task={task}>
+            <TaskCard
+              isLoading={isLoading}
+              updateTask={updateTask}
+              deleteTask={deleteTask}
+              task={task}
+              key={task.id}
+            >
               {task.title}
             </TaskCard>
-            {}
-          </li>
         );
       })}
-    </ul>
+    </Flex>
   ) : (
-    <div className={s.epmtyTaskListTitle}>Список задач пуст</div>
+    <Typography.Title level={4} type="secondary">Список задач пуст</Typography.Title>
   );
 };

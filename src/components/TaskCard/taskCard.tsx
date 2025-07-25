@@ -1,11 +1,12 @@
 import React from "react";
 import type { Task } from "../../api/tasksApi";
-import { Checkbox } from "../ui/Checkbox/checkbox";
-import { Input } from "../ui/Input/input";
-import { Typography } from "../ui/Typography/typography";
+import { Flex, Typography } from "antd";
 import s from "./taskCard.module.scss";
 import { TaskCardMenuButtons } from "./TaskCardMenuButtons/taskCardMenuButtons";
 import { useTaskCards } from "./useTaskCards";
+import Card from "antd/es/card/Card";
+import Checkbox from "antd/es/checkbox/Checkbox";
+import { Input } from "antd";
 
 interface TaskCard {
   children: string;
@@ -35,38 +36,41 @@ export const TaskCard: React.FC<TaskCard> = ({
   } = useTaskCards(task, updateTask, deleteTask);
 
   return (
-    <div className={s.container}>
-      <div className={s.checkboxTitleContainer}>
-        <Checkbox
-          checked={task.isDone}
-          disabled={isLoading}
-          onChange={handleChangeTaskStatus}
-          className={s.checkboxTaskStatus}
-        />
-        {isEdit ? (
-          <Input
+    <Card size="small" style={{ maxWidth: 350 }}>
+      <Flex gap="small" align="center" justify="space-between">
+        <Flex gap="small">
+          <Checkbox
+            checked={task.isDone}
             disabled={isLoading}
-            value={inputValue}
-            onChange={handleChangeInputValue}
-            errorMessage={errorMessage}
-            className={s.input}
-          />
-        ) : (
-          <Typography
-            className={`${s.taskValue} ${task.isDone ? s.taskIsDone : ""}`}
-          >
-            {children}
-          </Typography>
-        )}
-      </div>
-      <TaskCardMenuButtons
-        isEdit={isEdit}
-        isLoading={isLoading}
-        handleEditTaskTitle={handleEditTaskTitle}
-        handleDeleteTask={handleDeleteTask}
-        handleChangeTaskTitle={handleChangeTaskTitle}
-        handleCancelChangedTitle={handleCancelChangedTitle}
-      />
-    </div>
+            onChange={handleChangeTaskStatus}
+          ></Checkbox>
+          {isEdit ? (
+            <Flex vertical align="start">
+              <Input
+                disabled={isLoading}
+                value={inputValue}
+                onChange={handleChangeInputValue}
+                status={errorMessage ? 'error' : ''}
+                variant="underlined"
+                size="small"
+              />
+              {errorMessage && <Typography.Text type="danger">{errorMessage}</Typography.Text>}
+            </Flex>
+          ) : (
+            <Typography.Text className={`${task.isDone ? s.taskIsDone : ""}`}>
+              {children}
+            </Typography.Text>
+          )}
+        </Flex>
+        <TaskCardMenuButtons
+          isEdit={isEdit}
+          isLoading={isLoading}
+          handleEditTaskTitle={handleEditTaskTitle}
+          handleDeleteTask={handleDeleteTask}
+          handleChangeTaskTitle={handleChangeTaskTitle}
+          handleCancelChangedTitle={handleCancelChangedTitle}
+        />
+      </Flex>
+    </Card>
   );
 };

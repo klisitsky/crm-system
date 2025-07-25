@@ -1,18 +1,17 @@
+import { Flex, Spin } from "antd";
 import { AddTaskForm } from "../../components/AddTaskForm/addTaskForm";
 import { TasksFilter } from "../../components/TasksFiler/tasksFilter";
 import { TasksList } from "../../components/TasksList/tasksList";
-import { Loader } from "../../components/ui/Loader/Loader";
-import { SnackBar } from "../../components/ui/SnackBar/snackBar";
+import { LoadingOutlined } from "@ant-design/icons";
 import { useTodolist } from "./useTodolist";
 
 export const Todolist = () => {
-
   const {
     isLoading,
     filterStatus,
     tasksData,
     filteredTasks,
-    appError,
+    contextHolder,
     filterTasksByStatus,
     addNewTask,
     updateTask,
@@ -20,26 +19,26 @@ export const Todolist = () => {
   } = useTodolist();
 
   return (
-    <>
+    <Flex gap="small" vertical>
       <AddTaskForm isLoading={isLoading} addNewTask={addNewTask} />
+      <TasksFilter
+        filterStatus={filterStatus}
+        tasksInfoAmount={tasksData.info}
+        filterTasksByStatus={filterTasksByStatus}
+      />
       {isLoading ? (
-        <Loader />
+        <Spin size="large" indicator={<LoadingOutlined spin />} />
       ) : (
         <>
-          <TasksFilter
-            filterStatus={filterStatus}
-            tasksInfoAmount={tasksData.info}
-            filterTasksByStatus={filterTasksByStatus}
-          />
           <TasksList
             isLoading={isLoading}
             updateTask={updateTask}
             deleteTask={deleteTask}
             tasks={filteredTasks}
           />
-        </>
+        </> 
       )}
-      {appError && <SnackBar>{appError}</SnackBar>}
-    </>
+      {contextHolder}
+    </Flex>
   );
 };

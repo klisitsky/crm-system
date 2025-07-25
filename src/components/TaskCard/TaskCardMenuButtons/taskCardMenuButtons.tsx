@@ -1,10 +1,9 @@
 import React from "react";
-import { CancelIcon } from "../../../assets/icons/cancelIcon";
-import { DeleteIcon } from "../../../assets/icons/deleteIcon";
-import { EditIcon } from "../../../assets/icons/editIcon";
-import { SaveIcon } from "../../../assets/icons/saveIcon";
-import s from "./taskCardMenuButtons.module.scss";
-import { Button } from "../../ui/Button/button";
+import { Button, Flex } from "antd";
+import SaveFilled from "@ant-design/icons/lib/icons/SaveFilled";
+import CloseCircleFilled from "@ant-design/icons/lib/icons/CloseCircleFilled";
+import EditFilled from "@ant-design/icons/lib/icons/EditFilled";
+import DeleteFilled from "@ant-design/icons/lib/icons/DeleteFilled";
 
 interface TaskCardMenuButtons {
   isEdit: boolean;
@@ -24,44 +23,41 @@ export const TaskCardMenuButtons: React.FC<TaskCardMenuButtons> = ({
   handleCancelChangedTitle,
 }) => {
   return (
-    <div className={s.buttonsContainer}>
+    <Flex gap="small">
       {isEdit ? (
         <>
           <Button
-            variant="primary"
+            type="primary"
             onClick={handleChangeTaskTitle}
             disabled={isLoading}
-            className={s.button}
-          >
-            <SaveIcon />
-          </Button>
+            size="small"
+            icon={<SaveFilled key="save" />}
+          ></Button>
           <Button
-            variant="primary"
+            type="primary"
             onClick={handleCancelChangedTitle}
             disabled={isLoading}
-            className={s.button}
-          >
-            <CancelIcon />
-          </Button>
+            size="small"
+            icon={<CloseCircleFilled key="cancel" />}
+          ></Button>
         </>
       ) : (
         <Button
-          variant="primary"
+          type="primary"
           onClick={handleEditTaskTitle}
           disabled={isLoading}
-          className={s.button}
-        >
-          <EditIcon />
-        </Button>
+          size="small"
+          icon={<EditFilled key="edit" />}
+        ></Button>
       )}
       <Button
-        variant="danger"
+        color="danger"
+        variant="solid"
         onClick={handleDeleteTask}
         disabled={isLoading}
-        className={s.button}
-      >
-        <DeleteIcon />
-      </Button>
-    </div>
+        size="small"
+        icon={<DeleteFilled key="delete" />}
+      ></Button>
+    </Flex>
   );
 };

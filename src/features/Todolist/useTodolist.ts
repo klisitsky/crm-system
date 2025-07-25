@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { TasksApi } from "../../api/tasksApi";
 import type { Task, TasksData } from "../../api/tasksApi";
+import { notification } from "antd";
 
 export type LoadingStatus = "idle" | "pending" | "succeed" | "failed";
 export type FilterStatus = "all" | "completed" | "inWork";
@@ -19,7 +20,9 @@ export const useTodolist = () => {
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>("idle");
   const [appError, setAppError] = useState<string>("");
   const [filterStatus, setfilterStatus] = useState<FilterStatus>("all");
+  const [api, contextHolder] = notification.useNotification();
 
+  if (appError) api["error"]({ message: appError, placement: "bottomLeft" });
   const isLoading = loadingStatus === "pending";
 
   const addNewTask = useCallback((newTitle: string) => {
@@ -96,6 +99,7 @@ export const useTodolist = () => {
     tasksData,
     filteredTasks,
     appError,
+    contextHolder,
     filterTasksByStatus,
     addNewTask,
     updateTask,
