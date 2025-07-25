@@ -10,7 +10,6 @@ export const Todolist = () => {
     isLoading,
     filterStatus,
     tasksData,
-    filteredTasks,
     contextHolder,
     filterTasksByStatus,
     addNewTask,
@@ -34,7 +33,7 @@ export const Todolist = () => {
             isLoading={isLoading}
             updateTask={updateTask}
             deleteTask={deleteTask}
-            tasks={filteredTasks}
+            tasks={tasksData.data}
           />
         </> 
       )}
