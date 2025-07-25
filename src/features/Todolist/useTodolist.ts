@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TasksApi } from "../../api/tasksApi";
 import type { Task, TasksData } from "../../api/tasksApi";
 
@@ -34,8 +34,26 @@ export const useTodolist = () => {
   }, []);
 
   const filterTasksByStatus = useCallback((filterStatus: FilterStatus) => {
-    setfilterStatus(filterStatus);
-  }, []);
+    setLoadingStatus(() => "pending");
+    setAppError("");
+    TasksApi.getTasks()
+      .then((res) => {
+        const filterStatuses: Record<string, Task[]> = {
+          completed: res.data.filter((task) => task.isDone),
+          inWork: res.data.filter((task) => !task.isDone),
+        };
+        setTasksData(() => ({
+          ...res,
+          data: filterStatuses[filterStatus] ?? res.data,
+        }));
+        setLoadingStatus(() => "succeed");
+        setfilterStatus(filterStatus);
+      })
+      .catch((err) => {
+        setAppError(err.message);
+        setLoadingStatus(() => "failed");
+      });
+  }, [tasksData]);
 
   const updateTask = useCallback(
     (taskId: number, isDone: boolean, title: string) => {
@@ -75,26 +93,21 @@ export const useTodolist = () => {
   useEffect(() => {
     setLoadingStatus(() => "pending");
     setAppError("");
-    TasksApi.getTasks().then((res) => {
-      setLoadingStatus(() => "succeed");
-      setTasksData(() => res);
-    });
+    TasksApi.getTasks()
+      .then((res) => {
+        setLoadingStatus(() => "succeed");
+        setTasksData(() => res);
+      })
+      .catch((err) => {
+        setAppError(err.message);
+        setLoadingStatus(() => "failed");
+      });
   }, []);
-
-  const filteredTasks = useMemo(() => {
-    const filterStatuses: Record<string, Task[]> = {
-      completed: tasksData.data.filter((task) => task.isDone),
-      inWork: tasksData.data.filter((task) => !task.isDone),
-    };
-    
-    return filterStatuses[filterStatus] ?? tasksData.data;
-  }, [tasksData.data, filterStatus]);
 
   return {
     isLoading,
     filterStatus,
     tasksData,
-    filteredTasks,
     appError,
     filterTasksByStatus,
     addNewTask,

@@ -11,7 +11,6 @@ export const Todolist = () => {
     isLoading,
     filterStatus,
     tasksData,
-    filteredTasks,
     appError,
     filterTasksByStatus,
     addNewTask,
@@ -35,7 +34,7 @@ export const Todolist = () => {
             isLoading={isLoading}
             updateTask={updateTask}
             deleteTask={deleteTask}
-            tasks={filteredTasks}
+            tasks={tasksData.data}
           />
         </>
       )}
