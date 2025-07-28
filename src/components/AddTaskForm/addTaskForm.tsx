@@ -1,67 +1,68 @@
-import type { ChangeEvent } from "react";
-import { useCallback, useState } from "react";
-import { getInputErrorMessage } from "../../utils/getInputErrorMessage";
-import { Button, Flex, Typography } from "antd";
-import { Input } from "antd";
+import { Button, Flex, Form, Input } from "antd";
+import { useCallback } from "react";
 
 interface AddTaskForm {
-  addNewTask: (newTitle: string) => void;
+  addNewTask: (newTitle: string) => Promise<string | undefined>;
   isLoading: boolean;
 }
+
+export const MIN_SYMBOLS_COUNT = 2;
+export const MAX_SYMBOLS_COUNT = 64;
 
 export const AddTaskForm: React.FC<AddTaskForm> = ({
   addNewTask,
   isLoading,
 }) => {
-  const [inputValue, setInputValue] = useState<string>("");
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [form] = Form.useForm();
 
-  const handleChangeInputValue = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setErrorMessage("");
-      setInputValue(e.currentTarget.value);
-    },
-    []
-  );
-
-  const handleAddTask = useCallback(async () => {
-    const errorMessageValue = getInputErrorMessage(inputValue);
-    if (!errorMessageValue) {
-      addNewTask(inputValue);
-      setInputValue("");
-      setErrorMessage("");
-    } else {
-      setErrorMessage(errorMessageValue);
-    }
-  }, [inputValue]);
+  const handleAddTask = useCallback(() => {
+    form.validateFields().then((res) => {
+      addNewTask(res.taskValue);
+      form.resetFields();
+    });
+  }, [form]);
 
   return (
-    <>
+    <Form form={form} validateTrigger="none">
       <Flex gap="large">
-        <Flex vertical align="start">
+        <Form.Item
+          style={{ margin: 0 }}
+          name="taskValue"
+          rules={[
+            {
+              required: true,
+              message: "Поле не может быть пустым",
+            },
+            {
+              min: MIN_SYMBOLS_COUNT,
+              message: "Длина менее 2 символов",
+            },
+            {
+              max: MAX_SYMBOLS_COUNT,
+              message: "Длина более 64 символов",
+            },
+          ]}
+        >
           <Input
-            value={inputValue}
-            onChange={handleChangeInputValue}
             placeholder="Task To Be Done..."
             disabled={isLoading}
-            status={errorMessage ? "error" : ""}
             variant="underlined"
             size="middle"
             style={{ backgroundColor: "transparent" }}
           />
-          {errorMessage && (
-            <Typography.Text type="danger">{errorMessage}</Typography.Text>
-          )}
-        </Flex>
-        <Button
-          type={"primary"}
-          onClick={handleAddTask}
-          disabled={isLoading}
-          style={{ width: "150px" }}
-        >
-          Add
-        </Button>
+        </Form.Item>
+        <Form.Item style={{ margin: 0 }}>
+          <Button
+            type="primary"
+            onClick={handleAddTask}
+            disabled={isLoading}
+            style={{ width: "100px" }}
+            htmlType="submit"
+          >
+            Add
+          </Button>
+        </Form.Item>
       </Flex>
-    </>
+    </Form>
   );
 };

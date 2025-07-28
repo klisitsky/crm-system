@@ -1,7 +1,5 @@
-import type { ChangeEvent } from "react";
 import { useCallback, useState } from "react";
 import { type Task } from "../../api/tasksApi";
-import { getInputErrorMessage } from "../../utils/getInputErrorMessage";
 
 export const useTaskCards = (
   task: Task,
@@ -9,17 +7,10 @@ export const useTaskCards = (
   deleteTask: (taskId: number) => void
 ) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const [inputValue, setInputValue] = useState<string>(task.title);
-  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const handleChangeInputValue = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setErrorMessage("");
-      setInputValue(e.currentTarget.value);
-    },
-    []
-  );
-
+  const toggleIsEdit = () => {
+    setIsEdit(prev => !prev)
+  }
   const handleChangeTaskStatus = useCallback(() => {
     updateTask(task.id, !task.isDone, task.title);
   }, [task]);
@@ -32,33 +23,11 @@ export const useTaskCards = (
     deleteTask(task.id);
   }, [task.id]);
 
-  const handleChangeTaskTitle = useCallback(() => {
-    const errorMessageValue = getInputErrorMessage(inputValue);
-
-    if (!errorMessageValue) {
-      updateTask(task.id, task.isDone, inputValue);
-      setIsEdit((prev) => !prev);
-      setErrorMessage("");
-    } else {
-      setErrorMessage(errorMessageValue);
-    }
-  }, [inputValue, task]);
-
-  const handleCancelChangedTitle = useCallback(() => {
-    setIsEdit((prev) => !prev);
-    setInputValue(task.title);
-    setErrorMessage("");
-  }, [task.title]);
-
   return {
     isEdit,
-    inputValue,
-    errorMessage,
-    handleChangeInputValue,
+    toggleIsEdit,
     handleChangeTaskStatus,
     handleEditTaskTitle,
-    handleDeleteTask,
-    handleChangeTaskTitle,
-    handleCancelChangedTitle,
+    handleDeleteTask
   };
 };

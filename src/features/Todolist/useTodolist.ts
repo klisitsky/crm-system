@@ -21,42 +21,56 @@ export const useTodolist = () => {
   const [appError, setAppError] = useState<string>("");
   const [filterStatus, setfilterStatus] = useState<FilterStatus>("all");
   const [api, contextHolder] = notification.useNotification();
-
-  if (appError) api["error"]({ message: appError, placement: "bottomLeft" });
   const isLoading = loadingStatus === "pending";
+  
+  if (appError) api["error"]({ message: appError, placement: "bottomLeft" });
 
   const addNewTask = useCallback((newTitle: string) => {
     setLoadingStatus(() => "pending");
     setAppError("");
-    TasksApi.createTask(newTitle).then(() => {
-      TasksApi.getTasks().then((res) => {
-        setTasksData(() => res);
-        setLoadingStatus(() => "succeed");
-      });
-    });
-  }, []);
-
-  const filterTasksByStatus = useCallback((filterStatus: FilterStatus) => {
-    setLoadingStatus(() => "pending");
-    setAppError("");
-    TasksApi.getTasks()
-      .then((res) => {
-        const filterStatuses: Record<string, Task[]> = {
-          completed: res.data.filter((task) => task.isDone),
-          inWork: res.data.filter((task) => !task.isDone),
-        };
-        setTasksData(() => ({
-          ...res,
-          data: filterStatuses[filterStatus] ?? res.data,
-        }));
-        setLoadingStatus(() => "succeed");
-        setfilterStatus(filterStatus);
+    return TasksApi.createTask(newTitle)
+      .then(() => {
+        TasksApi.getTasks()
+          .then((res) => {
+            setTasksData(() => res);
+            setLoadingStatus(() => "succeed");
+          })
+          .catch((err) => {
+            setAppError(err.message);
+            setLoadingStatus(() => "failed");
+          });
       })
       .catch((err) => {
         setAppError(err.message);
         setLoadingStatus(() => "failed");
+        return err.message
       });
-  }, [tasksData]);
+  }, []);
+
+  const filterTasksByStatus = useCallback(
+    (filterStatus: FilterStatus) => {
+      setLoadingStatus(() => "pending");
+      setAppError("");
+      TasksApi.getTasks()
+        .then((res) => {
+          const filterStatuses: Record<string, Task[]> = {
+            completed: res.data.filter((task) => task.isDone),
+            inWork: res.data.filter((task) => !task.isDone),
+          };
+          setTasksData(() => ({
+            ...res,
+            data: filterStatuses[filterStatus] ?? res.data,
+          }));
+          setLoadingStatus(() => "succeed");
+          setfilterStatus(filterStatus);
+        })
+        .catch((err) => {
+          setAppError(err.message);
+          setLoadingStatus(() => "failed");
+        });
+    },
+    [tasksData]
+  );
 
   const updateTask = useCallback(
     (taskId: number, isDone: boolean, title: string) => {
