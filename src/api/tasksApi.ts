@@ -1,3 +1,5 @@
+import type { FilterStatus } from "../pages/TodolistPage/useTodolistPage";
+
 export interface Task {
   created: string;
   id: number;
@@ -22,6 +24,10 @@ export type TasksData = ResponseFetchTasks;
 type ResponceCreateTask = Task;
 type ResponceChangeTask = Pick<Task, "isDone" | "title">;
 
+interface FetchTasksOptions {
+  filterStatus?: FilterStatus;
+}
+
 const BASE_URL = "https://easydev.club/api/v1/";
 
 const errorStatuses: Record<string, string> = {
@@ -37,8 +43,8 @@ const checkStatusResponse = (response: Response) => {
 };
 
 export class TasksApi {
-  static getTasks() {
-    return fetch(`${BASE_URL}todos`)
+  static fetchTasks(options?: FetchTasksOptions) {
+    return fetch(`${BASE_URL}todos?filter=${options?.filterStatus ?? 'all'}`)
       .then((response): Promise<ResponseFetchTasks> => {
         if (!response.ok && response.status === 500) {
           throw new Error("Ошибка сервера");

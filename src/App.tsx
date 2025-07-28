@@ -1,8 +1,8 @@
 import "./App.css";
-import { Todolist } from "./features/Todolist/todolist";
+import { TodolistPage } from "./pages/TodolistPage/todolistPage";
 
 function App() {
-  return <><Todolist/></>;
+  return <><TodolistPage/></>;
 }
 
 export default App;

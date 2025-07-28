@@ -3,9 +3,9 @@ import { TasksFilter } from "../../components/TasksFiler/tasksFilter";
 import { TasksList } from "../../components/TasksList/tasksList";
 import { Loader } from "../../components/ui/Loader/Loader";
 import { SnackBar } from "../../components/ui/SnackBar/snackBar";
-import { useTodolist } from "./useTodolist";
+import { useTodolistPage } from "./useTodolistPage";
 
-export const Todolist = () => {
+export const TodolistPage = () => {
 
   const {
     isLoading,
@@ -16,7 +16,7 @@ export const Todolist = () => {
     addNewTask,
     updateTask,
     deleteTask,
-  } = useTodolist();
+  } = useTodolistPage();
 
   return (
     <>

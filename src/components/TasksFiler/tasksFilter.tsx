@@ -1,5 +1,5 @@
 import type { TasksInfoAmount } from "../../api/tasksApi";
-import type { FilterStatus } from "../../features/Todolist/useTodolist";
+import type { FilterStatus } from "../../pages/TodolistPage/useTodolistPage";
 import { Button } from "../ui/Button/button";
 import { Typography } from "../ui/Typography/typography";
 import s from "./tasksFilter.module.scss";
