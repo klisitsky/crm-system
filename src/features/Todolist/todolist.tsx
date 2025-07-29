@@ -11,7 +11,7 @@ export const Todolist = () => {
     filterStatus,
     tasksData,
     contextHolder,
-    filterTasksByStatus,
+    fetchTasksByFilter,
     addNewTask,
     updateTask,
     deleteTask,
@@ -23,7 +23,7 @@ export const Todolist = () => {
       <TasksFilter
         filterStatus={filterStatus}
         tasksInfoAmount={tasksData.info}
-        filterTasksByStatus={filterTasksByStatus}
+        fetchTasksByFilter={fetchTasksByFilter}
       />
       {isLoading ? (
         <Spin size="large" indicator={<LoadingOutlined spin />} />

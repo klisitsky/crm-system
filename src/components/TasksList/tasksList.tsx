@@ -7,8 +7,8 @@ import type { Task } from "../../api/tasksApi";
 interface TasksList {
   tasks: Task[];
   isLoading: boolean;
-  updateTask: (taskId: number, isDone: boolean, title: string) => void;
-  deleteTask: (taskId: number) => void;
+  updateTask: (taskId: number, isDone: boolean, title: string) => Promise<void>;
+  deleteTask: (taskId: number) => Promise<void>;
 }
 
 export const TasksList: React.FC<TasksList> = ({

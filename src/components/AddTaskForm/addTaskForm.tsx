@@ -2,7 +2,7 @@ import { Button, Flex, Form, Input } from "antd";
 import { useCallback } from "react";
 
 interface AddTaskForm {
-  addNewTask: (newTitle: string) => Promise<string | undefined>;
+  addNewTask: (newTitle: string) => Promise<void>;
   isLoading: boolean;
 }
 
