@@ -9,7 +9,7 @@ const { Text } = Typography;
 interface TasksFilter {
   filterStatus: FilterStatus;
   tasksInfoAmount: TasksInfoAmount;
-  fetchTasksByFilter: (filterStatus?: FilterStatus | undefined) => void;
+  fetchTasksByFilter: (filterStatus?: FilterStatus) => Promise<void>;
 }
 
 export const TasksFilter: React.FC<TasksFilter> = ({
