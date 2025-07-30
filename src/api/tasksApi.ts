@@ -1,4 +1,4 @@
-import type { FilterStatus } from "../features/Todolist/useTodolist";
+import type { FilterStatus } from "../pages/TodolistPage/useTodolistPage";
 import { instance } from "./instanceApi";
 
 export class TasksApi {

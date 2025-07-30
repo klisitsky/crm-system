@@ -1,5 +1,5 @@
 import type { TasksInfoAmount } from "../../api/tasksApi";
-import type { FilterStatus } from "../../features/Todolist/useTodolist";
+import type { FilterStatus } from "../../pages/TodolistPage/useTodolistPage";
 import { Button, Flex } from "antd";
 import { Typography } from "antd";
 import s from "./tasksFilter.module.scss";
@@ -20,7 +20,7 @@ export const TasksFilter: React.FC<TasksFilter> = ({
   const { all, inWork, completed } = tasksInfoAmount;
 
   return (
-    <Flex justify="space-between">
+    <Flex justify="space-around" style={{padding: "5px"}}>
       <Button type={"text"} onClick={() => fetchTasksByFilter()}>
         <Text
           className={`${filterStatus === "all" ? s.active : ""}`}

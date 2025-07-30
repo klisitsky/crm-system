@@ -7,7 +7,7 @@ import type { TasksData } from "../../api/tasksApi";
 export type LoadingStatus = "idle" | "pending" | "succeed" | "failed";
 export type FilterStatus = "all" | "completed" | "inWork";
 
-export const useTodolist = () => {
+export const useTodolistPage = () => {
   const initialState: TasksData = {
     data: [],
     info: {

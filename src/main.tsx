@@ -1,21 +1,33 @@
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
-import './styles/index.scss'
-import '@ant-design/v5-patch-for-react-19';
-import { unstableSetRender } from 'antd';
+import "@ant-design/v5-patch-for-react-19";
+import { createRoot } from "react-dom/client";
+import { createBrowserRouter, redirect, RouterProvider } from "react-router";
+import "./index.css";
+import "./styles/index.scss";
+import { TodolistPage } from "./pages/TodolistPage/todolistPage.tsx";
+import App from "./App.tsx";
+import { ProfilePage } from "./pages/ProfilePage/ProfilePage.tsx";
 
-createRoot(document.getElementById('root')!).render(
-    <App />
-)
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      {
+        index: true,
+        loader: () => redirect("/tasks"),
+      },
+      {
+        path: "tasks",
+        element: <TodolistPage />,
+      },
+      {
+        path: "profile",
+        element: <ProfilePage />,
+      },
+    ],
+  },
+]);
 
+const root = document.getElementById("root");
 
-unstableSetRender((node, container) => {
-    container._reactRoot ||= createRoot(container);
-    const root = container._reactRoot;
-    root.render(node);
-    return async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      root.unmount();
-    };
-  });
+createRoot(root!).render(<RouterProvider router={router} />);
