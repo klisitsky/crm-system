@@ -1,47 +1,59 @@
-import { useCallback } from "react";
-import type { Task } from "../../../api/tasksApi";
-import { Button, Flex, Form } from "antd";
-import { MAX_SYMBOLS_COUNT, MIN_SYMBOLS_COUNT } from "../../AddTaskForm/addTaskForm";
-import Input from "antd/es/input/Input";
-import SaveFilled from "@ant-design/icons/lib/icons/SaveFilled";
-import CloseCircleFilled from "@ant-design/icons/lib/icons/CloseCircleFilled";
+import CloseCircleOutlined from "@ant-design/icons/lib/icons/CloseCircleOutlined";
 import DeleteFilled from "@ant-design/icons/lib/icons/DeleteFilled";
+import SaveFilled from "@ant-design/icons/lib/icons/SaveFilled";
+import { Button, Flex, Form } from "antd";
+import Input from "antd/es/input/Input";
+import { useCallback } from "react";
+import { updateTodo } from "../../../api/todoApi";
+import { getErrorMessage } from "../../../utils/getErrorMessage";
+import {
+  MAX_SYMBOLS_COUNT,
+  MIN_SYMBOLS_COUNT,
+} from "../../AddTodoForm/AddTodoForm";
+import type { Todo } from "../../../types/todos";
 
-interface EditTaskForm {
-  task: Task;
+interface EditTodoForm {
+  todo: Todo;
   isLoading: boolean;
   toggleIsEdit: () => void;
-  updateTask: (taskId: number, isDone: boolean, title: string) => void;
-  handleDeleteTask: () => void;
+  onUpdate?: () => void;
+  handleDeleteTodo: () => void;
 }
 
-export const EditTaskForm: React.FC<EditTaskForm> = ({
-  task,
+export const EditTodoForm: React.FC<EditTodoForm> = ({
+  todo,
   isLoading,
   toggleIsEdit,
-  updateTask,
-  handleDeleteTask,
+  onUpdate,
+  handleDeleteTodo,
 }) => {
   const [form] = Form.useForm();
 
-  const handleChangeTaskTitle = useCallback(() => {
+  const handleChangeTodoTitle = useCallback(() => {
     form.validateFields().then((res) => {
-      updateTask(task.id, task.isDone, res.taskValue);
+      updateTodo(todo.id, todo.isDone, res.todoValue)
+        .then(() => {
+          onUpdate?.();
+          toggleIsEdit();
+        })
+        .catch((err) => {
+          alert(getErrorMessage(err));
+        });
       form.resetFields();
     });
-  }, [task]);
+  }, [todo, form, toggleIsEdit, onUpdate]);
 
   const handleCloseEditForm = useCallback(() => {
     toggleIsEdit();
-    form.setFieldValue("taskValue", task.title);
-  }, [task.title]);
+    form.setFieldValue("todoValue", todo.title);
+  }, [todo.title, form, toggleIsEdit]);
 
   return (
-    <Form form={form} validateTrigger="none">
+    <Form form={form} validateTrigger="none" style={{ flex: 1 }}>
       <Flex gap="small" align="center">
         <Form.Item
-          style={{ margin: 0 }}
-          name="taskValue"
+          style={{ margin: 0, flex: 1 }}
+          name="todoValue"
           rules={[
             {
               required: true,
@@ -61,35 +73,36 @@ export const EditTaskForm: React.FC<EditTaskForm> = ({
             disabled={isLoading}
             variant="underlined"
             size="small"
-            defaultValue={task.title}
+            defaultValue={todo.title}
           />
         </Form.Item>
-        <Flex gap="small" align="center">
+        <Flex gap="middle" align="center">
           <Form.Item style={{ margin: 0 }}>
             <Button
               type="primary"
-              onClick={handleChangeTaskTitle}
+              onClick={handleChangeTodoTitle}
               disabled={isLoading}
-              size="small"
+              size="middle"
               icon={<SaveFilled key="save" />}
             ></Button>
           </Form.Item>
           <Form.Item style={{ margin: 0 }}>
             <Button
-              type="primary"
+              color="blue"
+              variant="outlined"
               onClick={handleCloseEditForm}
               disabled={isLoading}
-              size="small"
-              icon={<CloseCircleFilled key="close" />}
+              size="middle"
+              icon={<CloseCircleOutlined key="close" />}
             ></Button>
           </Form.Item>
           <Form.Item style={{ margin: 0 }}>
             <Button
               color="danger"
               variant="solid"
-              onClick={handleDeleteTask}
+              onClick={handleDeleteTodo}
               disabled={isLoading}
-              size="small"
+              size="middle"
               icon={<DeleteFilled key="delete" />}
             ></Button>
           </Form.Item>

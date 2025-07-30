@@ -8,7 +8,7 @@ import { NavLink } from "react-router";
 type MenuItem = Required<MenuProps>["items"][number];
 
 export const AppMenu = () => {
-  const [current, setCurrent] = useState("tasks");
+  const [current, setCurrent] = useState("todos");
 
   const handleMenuClick: MenuProps["onClick"] = (event) => {
     setCurrent(event.key);
@@ -16,9 +16,9 @@ export const AppMenu = () => {
 
   const menuItems: MenuItem[] = [
     {
-      key: "tasks",
+      key: "todos",
       icon: <UnorderedListOutlined />,
-      label: <NavLink to="/tasks">Список задач</NavLink>,
+      label: <NavLink to="/todos">Список задач</NavLink>,
     },
     {
       key: "profile",

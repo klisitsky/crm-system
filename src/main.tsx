@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { createBrowserRouter, redirect, RouterProvider } from "react-router";
 import "./index.css";
 import "./styles/index.scss";
-import { TodolistPage } from "./pages/TodolistPage/todolistPage.tsx";
+import { TodolistPage } from "./pages/TodoListPage/TodoListPage.tsx";
 import App from "./App.tsx";
 import { ProfilePage } from "./pages/ProfilePage/ProfilePage.tsx";
 
@@ -14,10 +14,10 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        loader: () => redirect("/tasks"),
+        loader: () => redirect("/todos"),
       },
       {
-        path: "tasks",
+        path: "todos",
         element: <TodolistPage />,
       },
       {
