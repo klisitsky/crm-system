@@ -12,7 +12,7 @@ export const TodolistPage = () => {
     filterStatus,
     tasksData,
     appError,
-    filterTasksByStatus,
+    fetchTasksByFilter,
     addNewTask,
     updateTask,
     deleteTask,
@@ -28,7 +28,7 @@ export const TodolistPage = () => {
           <TasksFilter
             filterStatus={filterStatus}
             tasksInfoAmount={tasksData.info}
-            filterTasksByStatus={filterTasksByStatus}
+            fetchTasksByFilter={fetchTasksByFilter}
           />
           <TasksList
             isLoading={isLoading}

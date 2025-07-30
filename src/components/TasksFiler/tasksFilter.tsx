@@ -7,25 +7,25 @@ import s from "./tasksFilter.module.scss";
 interface TasksFilter {
   filterStatus: FilterStatus;
   tasksInfoAmount: TasksInfoAmount;
-  filterTasksByStatus: (filterStatus: FilterStatus) => void;
+  fetchTasksByFilter: (filterStatus?: FilterStatus) => Promise<void>;
 }
 
 export const TasksFilter: React.FC<TasksFilter> = ({
   filterStatus,
   tasksInfoAmount,
-  filterTasksByStatus,
+  fetchTasksByFilter,
 }) => {
   const { all, inWork, completed } = tasksInfoAmount;
 
   return (
     <div className={s.buttonsContainer}>
-      <Button onClick={() => filterTasksByStatus("all")} className={s.button}>
+      <Button onClick={() => fetchTasksByFilter()} className={s.button}>
         <Typography
           className={`${s.textButton} ${filterStatus === "all" ? s.active : ""}`}
         >{`Все (${all ?? 0})`}</Typography>
       </Button>
       <Button
-        onClick={() => filterTasksByStatus("inWork")}
+        onClick={() => fetchTasksByFilter("inWork")}
         className={s.button}
       >
         <Typography
@@ -33,7 +33,7 @@ export const TasksFilter: React.FC<TasksFilter> = ({
         >{`В работе (${inWork ?? 0})`}</Typography>
       </Button>
       <Button
-        onClick={() => filterTasksByStatus("completed")}
+        onClick={() => fetchTasksByFilter("completed")}
         className={s.button}
       >
         <Typography

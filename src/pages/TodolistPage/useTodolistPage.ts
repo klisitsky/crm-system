@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { TasksApi } from "../../api/tasksApi";
 import type { TasksData } from "../../api/tasksApi";
+import { getErrorMessage } from "../../utils/getErrorMessage";
 
 export type LoadingStatus = "idle" | "pending" | "succeed" | "failed";
 export type FilterStatus = "all" | "completed" | "inWork";
@@ -22,39 +23,38 @@ export const useTodolistPage = () => {
 
   const isLoading = loadingStatus === "pending";
   
-  const fetchTasks = async () => {
-    const tasksData = await TasksApi.fetchTasks();
-    setTasksData(() => tasksData);
-    setLoadingStatus(() => "succeed");
-  };
-
-  const addNewTask = useCallback(async (newTitle: string) => {
-    setLoadingStatus(() => "pending");
-    setAppError(() => "");
-    try {
-      await TasksApi.createTask(newTitle);
-      await fetchTasks();
-    } catch (err) {
-      if (err instanceof Error) setAppError(err.message);
-      setLoadingStatus(() => "failed");
-    }
-  }, []);
-
-  const filterTasksByStatus = useCallback(
-    async (filterStatus: FilterStatus) => {
+  const fetchTasksByFilter = useCallback(
+    async (filterStatus?: FilterStatus) => {
       setLoadingStatus(() => "pending");
       setAppError(() => "");
       try {
-        const filteredTasksData = await TasksApi.fetchTasks({ filterStatus });
-        setTasksData(() => filteredTasksData);
-        setfilterStatus(filterStatus);
+        const tasksData = await TasksApi.fetchTasks({ filterStatus });
+        setTasksData(() => tasksData);
         setLoadingStatus(() => "succeed");
+        setfilterStatus(filterStatus ?? "all");
       } catch (err) {
-        if (err instanceof Error) setAppError(err.message);
+        setAppError(() => getErrorMessage(err));
         setLoadingStatus(() => "failed");
       }
     },
     []
+  );
+
+  const addNewTask = useCallback(
+    async (newTitle: string) => {
+      setLoadingStatus(() => "pending");
+      setAppError(() => "");
+      try {
+        await TasksApi.createTask(newTitle);
+        const tasksData = await TasksApi.fetchTasks({ filterStatus });
+        setTasksData(() => tasksData);
+        setLoadingStatus(() => "succeed");
+      } catch (err) {
+        setAppError(() => getErrorMessage(err));
+        setLoadingStatus(() => "failed");
+      }
+    },
+    [filterStatus]
   );
 
   const updateTask = useCallback(
@@ -63,46 +63,44 @@ export const useTodolistPage = () => {
       setAppError(() => "");
       try {
         await TasksApi.updateTask(taskId, isDone, title);
-        await fetchTasks();
+        const tasksData = await TasksApi.fetchTasks({ filterStatus });
+        setTasksData(() => tasksData);
+        setLoadingStatus(() => "succeed");
       } catch (err) {
-        if (err instanceof Error) setAppError(err.message);
+        setAppError(() => getErrorMessage(err));
         setLoadingStatus(() => "failed");
       }
     },
-    []
+    [filterStatus]
   );
 
-  const deleteTask = useCallback(async (taskId: number) => {
-    setLoadingStatus(() => "pending");
-    setAppError(() => "");
-    try {
-      await TasksApi.deleteTask(taskId);
-      await fetchTasks();
-    } catch (err) {
-      if (err instanceof Error) setAppError(err.message);
-      setLoadingStatus(() => "failed");
-    }
-  }, []);
-
-  useEffect(() => {
-    setLoadingStatus(() => "pending");
-    setAppError(() => "");
-    (async () => {
+  const deleteTask = useCallback(
+    async (taskId: number) => {
+      setLoadingStatus(() => "pending");
+      setAppError(() => "");
       try {
-        await fetchTasks();
+        await TasksApi.deleteTask(taskId);
+        const tasksData = await TasksApi.fetchTasks({ filterStatus });
+        setTasksData(() => tasksData);
+        setLoadingStatus(() => "succeed");
       } catch (err) {
-        if (err instanceof Error) setAppError(err.message);
+        setAppError(() => getErrorMessage(err));
         setLoadingStatus(() => "failed");
       }
-    })();
-  }, []);
+    },
+    [filterStatus]
+  );
+
+  useEffect(() => {
+    fetchTasksByFilter();
+  }, [fetchTasksByFilter]);
 
   return {
     isLoading,
     filterStatus,
     tasksData,
     appError,
-    filterTasksByStatus,
+    fetchTasksByFilter,
     addNewTask,
     updateTask,
     deleteTask,
