@@ -7,10 +7,11 @@ interface TodosList {
   todos: Todo[];
   isLoading: boolean;
   onUpdate?: () => Promise<void>;
+  updateMode?: (mode: boolean) => void;
 }
 
 export const TodosList: React.FC<TodosList> = memo(
-  ({ todos, isLoading, onUpdate }) => {
+  ({ todos, isLoading, onUpdate, updateMode }) => {
     return todos.length ? (
       <List
         split={false}
@@ -22,6 +23,7 @@ export const TodosList: React.FC<TodosList> = memo(
               onUpdate={onUpdate}
               todo={todo}
               key={todo.id}
+              updateMode={updateMode}
             >
               {todo.title}
             </TodoCard>

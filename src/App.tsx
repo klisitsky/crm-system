@@ -7,12 +7,12 @@ import { AppMenu } from "./components/AppMenu/AppMenu";
 
 function App() {
   return (
-    <Layout style={{ height: "100%" }}>
+    <Layout>
       <Sider
         theme="dark"
         breakpoint="lg"
         collapsedWidth="0"
-        style={{ position: "fixed", height: "100%" }}
+        style={{ minHeight: "100vh" }}
       >
         <AppMenu />
       </Sider>

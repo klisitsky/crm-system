@@ -19,41 +19,49 @@ export const TodolistPage = () => {
   });
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>("idle");
   const [appError, setAppError] = useState<string>("");
+  const [isUpdateMode, setIsUpdateMode] = useState<boolean>(true);
   const [filterStatus, setfilterStatus] = useState<FilterStatus>("all");
   const [api, contextHolder] = notification.useNotification();
   const isLoading = loadingStatus === "pending";
 
   if (appError) api["error"]({ message: appError, placement: "bottomLeft" });
 
-  const fetchTodosByFilter = useCallback(
-    async (filterStatus: FilterStatus) => {
-      setLoadingStatus(() => "pending");
-      setAppError(() => "");
-      try {
-        const todos = await fetchTodos(filterStatus);
-        setTodosData(() => todos.data);
-        setTodosInfo(
-          () => todos.info ?? { all: 0, completed: 0, inWork: 0 }
-        );
-        setLoadingStatus(() => "succeed");
-        setfilterStatus(filterStatus);
-      } catch (err) {
-        setAppError(() => getErrorMessage(err));
-        setLoadingStatus(() => "failed");
-      }
-    },
-    []
-  );
+  const fetchTodosByFilter = useCallback(async (filterStatus: FilterStatus) => {
+    setLoadingStatus(() => "pending");
+    setAppError(() => "");
+    try {
+      const todos = await fetchTodos(filterStatus);
+      setTodosData(() => todos.data);
+      setTodosInfo(() => todos.info ?? { all: 0, completed: 0, inWork: 0 });
+      setLoadingStatus(() => "succeed");
+      setfilterStatus(filterStatus);
+    } catch (err) {
+      setAppError(() => getErrorMessage(err));
+      setLoadingStatus(() => "failed");
+    }
+  }, []);
 
   useEffect(() => {
-    fetchTodosByFilter('all');
-  }, [fetchTodosByFilter]);
+    if (!isUpdateMode) return;
+
+    const intervalId = setInterval(() => {
+      fetchTodosByFilter(filterStatus);
+    }, 5000);
+    fetchTodosByFilter(filterStatus);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [fetchTodosByFilter, filterStatus, isUpdateMode]);
 
   return (
     <>
       <Row>
         <Col span={8} offset={8}>
-          <AddTodoForm isLoading={isLoading} onUpdate={() => fetchTodosByFilter(filterStatus)} />
+          <AddTodoForm
+            isLoading={isLoading}
+            onUpdate={() => fetchTodosByFilter(filterStatus)}
+          />
         </Col>
       </Row>
       <Row>
@@ -73,8 +81,9 @@ export const TodolistPage = () => {
             <>
               <TodosList
                 isLoading={isLoading}
-                onUpdate={() => fetchTodosByFilter(filterStatus)}
                 todos={todosData}
+                onUpdate={() => fetchTodosByFilter(filterStatus)}
+                updateMode={setIsUpdateMode}
               />
             </>
           )}

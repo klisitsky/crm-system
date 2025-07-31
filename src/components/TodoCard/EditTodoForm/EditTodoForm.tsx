@@ -15,41 +15,45 @@ import type { Todo } from "../../../types/todos";
 interface EditTodoForm {
   todo: Todo;
   isLoading: boolean;
-  toggleIsEdit: () => void;
-  onUpdate?: () => void;
   handleDeleteTodo: () => void;
+  updateMode?: (mode: boolean) => void;
 }
 
 export const EditTodoForm: React.FC<EditTodoForm> = ({
   todo,
   isLoading,
-  toggleIsEdit,
-  onUpdate,
   handleDeleteTodo,
+  updateMode,
 }) => {
   const [form] = Form.useForm();
 
-  const handleChangeTodoTitle = useCallback(() => {
+  const handleUpdateTodoTitle = useCallback(() => {
     form.validateFields().then((res) => {
       updateTodo(todo.id, todo.isDone, res.todoValue)
         .then(() => {
-          onUpdate?.();
-          toggleIsEdit();
+          updateMode?.(true);
         })
         .catch((err) => {
           alert(getErrorMessage(err));
         });
       form.resetFields();
     });
-  }, [todo, form, toggleIsEdit, onUpdate]);
+  }, [todo, form, updateMode]);
 
   const handleCloseEditForm = useCallback(() => {
-    toggleIsEdit();
+    updateMode?.(true);
     form.setFieldValue("todoValue", todo.title);
-  }, [todo.title, form, toggleIsEdit]);
+  }, [todo.title, form, updateMode]);
 
   return (
-    <Form form={form} validateTrigger="none" style={{ flex: 1 }}>
+    <Form
+      initialValues={{
+        todoValue: todo.title,
+      }}
+      form={form}
+      validateTrigger="none"
+      style={{ flex: 1 }}
+    >
       <Flex gap="small" align="center">
         <Form.Item
           style={{ margin: 0, flex: 1 }}
@@ -69,18 +73,13 @@ export const EditTodoForm: React.FC<EditTodoForm> = ({
             },
           ]}
         >
-          <Input
-            disabled={isLoading}
-            variant="underlined"
-            size="small"
-            defaultValue={todo.title}
-          />
+          <Input disabled={isLoading} variant="underlined" size="small" />
         </Form.Item>
         <Flex gap="middle" align="center">
           <Form.Item style={{ margin: 0 }}>
             <Button
               type="primary"
-              onClick={handleChangeTodoTitle}
+              onClick={handleUpdateTodoTitle}
               disabled={isLoading}
               size="middle"
               icon={<SaveFilled key="save" />}
