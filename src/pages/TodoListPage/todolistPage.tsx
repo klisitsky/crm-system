@@ -10,7 +10,7 @@ import type { FilterStatus, Todo, TodoInfo } from "../../types/todos";
 
 type LoadingStatus = "idle" | "pending" | "succeed" | "failed";
 
-export const Asdasd = () => {
+export const TodoListPage = () => {
   const [todosData, setTodosData] = useState<Todo[]>([]);
   const [todosInfo, setTodosInfo] = useState<TodoInfo>({
     all: 0,
