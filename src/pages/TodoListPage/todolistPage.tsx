@@ -3,7 +3,7 @@ import { Col, notification, Row, Spin } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { fetchTodos } from "../../api/todoApi";
 import { AddTodoForm } from "../../components/AddTodoForm/AddTodoForm";
-import { TodosFilter } from "../../components/TodosFiler/TodosFilter";
+import { TodosFilter } from "../../components/TodosFilter/TodosFilter";
 import { TodosList } from "../../components/TodosList/TodosList";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import type { FilterStatus, Todo, TodoInfo } from "../../types/todos";

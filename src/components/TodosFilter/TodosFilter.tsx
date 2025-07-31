@@ -1,8 +1,8 @@
 import { Button, Flex } from "antd";
 import { Typography } from "antd";
-import s from "./todosFilter.module.scss";
 import { memo } from "react";
 import type { FilterStatus, TodoInfo } from "../../types/todos";
+import s from './TodosFilter.module.scss'
 
 const { Text } = Typography;
 
