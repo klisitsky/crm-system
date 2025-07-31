@@ -3,9 +3,9 @@ import { createRoot } from "react-dom/client";
 import { createBrowserRouter, redirect, RouterProvider } from "react-router";
 import "./index.css";
 import "./styles/index.scss";
-import { TodoListPage } from "./pages/TodoListPage/TodoListPage.tsx";
 import App from "./App.tsx";
 import { ProfilePage } from "./pages/ProfilePage/ProfilePage.tsx";
+import { TodoListPage } from "./pages/TodoListPage/TodoListPage.tsx";
 
 const router = createBrowserRouter([
   {
