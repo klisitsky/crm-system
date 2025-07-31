@@ -16,7 +16,7 @@ export const AddTodoForm: React.FC<AddTodoForm> = memo(({ isLoading, onUpdate })
 
   const handleAddTodo = useCallback(() => {
     form.validateFields().then(async (res) => {
-      createTodo(res.todoValue)
+      createTodo(res.todoValue.trim())
         .then(() => {
           onUpdate?.();
           form.resetFields();

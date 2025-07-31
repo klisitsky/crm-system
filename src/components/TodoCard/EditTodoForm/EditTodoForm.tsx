@@ -29,7 +29,7 @@ export const EditTodoForm: React.FC<EditTodoForm> = ({
 
   const handleUpdateTodoTitle = useCallback(() => {
     form.validateFields().then((res) => {
-      updateTodo(todo.id, todo.isDone, res.todoValue)
+      updateTodo(todo.id, todo.isDone, res.todoValue.trim())
         .then(() => {
           updateMode?.(true);
         })
