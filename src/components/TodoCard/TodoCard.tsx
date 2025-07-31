@@ -7,8 +7,8 @@ import React, { memo, useCallback, useState } from "react";
 import { EditTodoForm } from "./EditTodoForm/EditTodoForm";
 import { deleteTodo, updateTodo } from "../../api/todoApi";
 import { getErrorMessage } from "../../utils/getErrorMessage";
-import s from "./todoCard.module.scss";
 import type { Todo } from "../../types/todos";
+import s from './TodoCard.module.scss'
 
 interface TodoCard {
   children: string;
