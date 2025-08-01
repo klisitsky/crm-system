@@ -29,7 +29,7 @@ export const EditTodoForm: React.FC<EditTodoForm> = ({
 
   const handleUpdateTodoTitle = useCallback(() => {
     form.validateFields().then((res) => {
-      updateTodo(todo.id, todo.isDone, res.todoValue.trim())
+      updateTodo(todo.id, todo.isDone, res.todoValue)
         .then(() => {
           updateMode?.(true);
         })
@@ -52,6 +52,7 @@ export const EditTodoForm: React.FC<EditTodoForm> = ({
       }}
       form={form}
       validateTrigger="none"
+      onFinish={handleUpdateTodoTitle}
       style={{ flex: 1 }}
     >
       <Flex gap="small" align="center">
@@ -62,6 +63,7 @@ export const EditTodoForm: React.FC<EditTodoForm> = ({
             {
               required: true,
               message: "Поле не может быть пустым",
+              transform: (value) => value.trim()
             },
             {
               min: MIN_SYMBOLS_COUNT,
@@ -79,10 +81,10 @@ export const EditTodoForm: React.FC<EditTodoForm> = ({
           <Form.Item style={{ margin: 0 }}>
             <Button
               type="primary"
-              onClick={handleUpdateTodoTitle}
               disabled={isLoading}
               size="middle"
               icon={<SaveFilled key="save" />}
+              htmlType="submit"
             ></Button>
           </Form.Item>
           <Form.Item style={{ margin: 0 }}>
