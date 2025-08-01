@@ -14,7 +14,7 @@ export const MAX_SYMBOLS_COUNT = 64;
 export const AddTodoForm: React.FC<AddTodoForm> = memo(({ isLoading, onUpdate }) => {
   const [form] = Form.useForm();
 
-  const handleAddTodo = useCallback(() => {
+  const handleCreateTodo = useCallback(() => {
     form.validateFields().then(async (res) => {
       createTodo(res.todoValue.trim())
         .then(() => {
@@ -59,7 +59,7 @@ export const AddTodoForm: React.FC<AddTodoForm> = memo(({ isLoading, onUpdate })
         <Form.Item style={{ margin: 0 }}>
           <Button
             type="primary"
-            onClick={handleAddTodo}
+            onClick={handleCreateTodo}
             disabled={isLoading}
             style={{ width: "100px" }}
             htmlType="submit"

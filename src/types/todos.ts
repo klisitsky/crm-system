@@ -1,4 +1,5 @@
 export type FilterStatus = "all" | "completed" | "inWork";
+export type TodoId = number;
 
 export interface TodoRequest {
   title?: string;
@@ -6,10 +7,10 @@ export interface TodoRequest {
 }
 
 export interface Todo {
-  created: string;
-  id: number;
-  isDone: boolean;
+  id: TodoId;
   title: string;
+  isDone: boolean;
+  created: string;
 }
 
 export interface TodoInfo {
