@@ -4,46 +4,41 @@ import SaveFilled from "@ant-design/icons/lib/icons/SaveFilled";
 import { Button, Flex, Form } from "antd";
 import Input from "antd/es/input/Input";
 import { useCallback } from "react";
-import { updateTodo } from "../../../api/todoApi";
-import { getErrorMessage } from "../../../utils/getErrorMessage";
+import { useAppDispatch } from "../../../app/redux";
+import { todosSlice, updateTodo } from "../../../pages/TodoListPage/todosSlice";
+import type { Todo } from "../../../types/todos";
 import {
   MAX_SYMBOLS_COUNT,
   MIN_SYMBOLS_COUNT,
 } from "../../AddTodoForm/AddTodoForm";
-import type { Todo } from "../../../types/todos";
 
 interface EditTodoForm {
   todo: Todo;
-  isLoading: boolean;
+  disabled: boolean;
   handleDeleteTodo: () => void;
-  updateMode?: (mode: boolean) => void;
 }
 
 export const EditTodoForm: React.FC<EditTodoForm> = ({
   todo,
-  isLoading,
+  disabled,
   handleDeleteTodo,
-  updateMode,
 }) => {
   const [form] = Form.useForm();
+  const dispatch = useAppDispatch();
 
-  const handleUpdateTodoTitle = useCallback(() => {
-    form.validateFields().then((res) => {
-      updateTodo(todo.id, todo.isDone, res.todoValue)
-        .then(() => {
-          updateMode?.(true);
-        })
-        .catch((err) => {
-          alert(getErrorMessage(err));
-        });
+  const handleUpdateTodoTitle = useCallback(
+    (values: Record<string, string>) => {
+      dispatch(updateTodo({ todoId: todo.id, title: values.todoValue }));
+      dispatch(todosSlice.actions.toggleUpdatingTodosMode(true));
       form.resetFields();
-    });
-  }, [todo, form, updateMode]);
+    },
+    [todo, form]
+  );
 
   const handleCloseEditForm = useCallback(() => {
-    updateMode?.(true);
-    form.setFieldValue("todoValue", todo.title);
-  }, [todo.title, form, updateMode]);
+    dispatch(todosSlice.actions.toggleUpdatingTodosMode(true));
+    form.resetFields();
+  }, [todo.title, form]);
 
   return (
     <Form
@@ -63,7 +58,7 @@ export const EditTodoForm: React.FC<EditTodoForm> = ({
             {
               required: true,
               message: "Поле не может быть пустым",
-              transform: (value) => value.trim()
+              transform: (value) => value.trim(),
             },
             {
               min: MIN_SYMBOLS_COUNT,
@@ -75,13 +70,13 @@ export const EditTodoForm: React.FC<EditTodoForm> = ({
             },
           ]}
         >
-          <Input disabled={isLoading} variant="underlined" size="small" />
+          <Input disabled={disabled} variant="underlined" size="small" />
         </Form.Item>
         <Flex gap="middle" align="center">
           <Form.Item style={{ margin: 0 }}>
             <Button
               type="primary"
-              disabled={isLoading}
+              disabled={disabled}
               size="middle"
               icon={<SaveFilled key="save" />}
               htmlType="submit"
@@ -92,7 +87,7 @@ export const EditTodoForm: React.FC<EditTodoForm> = ({
               color="blue"
               variant="outlined"
               onClick={handleCloseEditForm}
-              disabled={isLoading}
+              disabled={disabled}
               size="middle"
               icon={<CloseCircleOutlined key="close" />}
             ></Button>
@@ -102,7 +97,7 @@ export const EditTodoForm: React.FC<EditTodoForm> = ({
               color="danger"
               variant="solid"
               onClick={handleDeleteTodo}
-              disabled={isLoading}
+              disabled={disabled}
               size="middle"
               icon={<DeleteFilled key="delete" />}
             ></Button>

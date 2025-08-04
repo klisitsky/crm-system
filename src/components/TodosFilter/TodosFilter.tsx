@@ -1,39 +1,40 @@
-import { Button, Flex } from "antd";
-import { Typography } from "antd";
+import { Button, Flex, Typography } from "antd";
 import { memo } from "react";
-import type { FilterStatus, TodoInfo } from "../../types/todos";
-import s from './TodosFilter.module.scss'
+import { useAppDispatch, useAppSelector } from "../../app/redux";
+import { todosSlice } from "../../pages/TodoListPage/todosSlice";
+import type { FilterStatus } from "../../types/todos";
+import s from "./TodosFilter.module.scss";
 
 const { Text } = Typography;
 
-interface TodosFilter {
-  filterStatus: FilterStatus;
-  todoInfo: TodoInfo;
-  fetchTodosByFilter: (filterStatus: FilterStatus) => Promise<void>;
-}
+export const TodosFilter: React.FC = memo(() => {
+  const dispatch = useAppDispatch();
+  const { all, completed, inWork } = useAppSelector(
+    todosSlice.selectors.selectTodosInfo
+  );
+  const filterStatus = useAppSelector(todosSlice.selectors.selectFilterStatus);
 
-export const TodosFilter: React.FC<TodosFilter> = memo(
-  ({ filterStatus, todoInfo, fetchTodosByFilter }) => {
-    const { all, inWork, completed } = todoInfo;
+  const fetchTodosByFilter = (filterStatus: FilterStatus) => {
+    dispatch(todosSlice.actions.updateFilterStatus(filterStatus));
+  };
 
-    return (
-      <Flex justify="space-around" style={{ padding: "5px" }}>
-        <Button type={"text"} onClick={() => fetchTodosByFilter("all")}>
-          <Text
-            className={`${filterStatus === "all" ? s.active : ""}`}
-          >{`Все (${all ?? 0})`}</Text>
-        </Button>
-        <Button type={"text"} onClick={() => fetchTodosByFilter("inWork")}>
-          <Text
-            className={`${filterStatus === "inWork" ? s.active : ""}`}
-          >{`В работе (${inWork ?? 0})`}</Text>
-        </Button>
-        <Button type={"text"} onClick={() => fetchTodosByFilter("completed")}>
-          <Text
-            className={`${filterStatus === "completed" ? s.active : ""}`}
-          >{`Сделано (${completed ?? 0})`}</Text>
-        </Button>
-      </Flex>
-    );
-  }
-);
+  return (
+    <Flex justify="space-around" style={{ padding: "5px" }}>
+      <Button type={"text"} onClick={() => fetchTodosByFilter("all")}>
+        <Text
+          className={`${filterStatus === "all" ? s.active : ""}`}
+        >{`Все (${all})`}</Text>
+      </Button>
+      <Button type={"text"} onClick={() => fetchTodosByFilter("inWork")}>
+        <Text
+          className={`${filterStatus === "inWork" ? s.active : ""}`}
+        >{`В работе (${inWork})`}</Text>
+      </Button>
+      <Button type={"text"} onClick={() => fetchTodosByFilter("completed")}>
+        <Text
+          className={`${filterStatus === "completed" ? s.active : ""}`}
+        >{`Сделано (${completed})`}</Text>
+      </Button>
+    </Flex>
+  );
+});

@@ -3,7 +3,7 @@ import Sider from "antd/es/layout/Sider";
 import { Content } from "antd/es/layout/layout";
 import { Outlet } from "react-router";
 import "./App.css";
-import { AppMenu } from "./components/AppMenu/AppMenu";
+import { AppMenu } from "../components/AppMenu/AppMenu";
 
 function App() {
   return (

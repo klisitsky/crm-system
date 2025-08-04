@@ -2,15 +2,21 @@ import "@ant-design/v5-patch-for-react-19";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, redirect, RouterProvider } from "react-router";
 import "./index.css";
-import "./styles/index.scss";
+import "../styles/index.scss";
 import App from "./App.tsx";
-import { ProfilePage } from "./pages/ProfilePage/ProfilePage.tsx";
-import { TodoListPage } from "./pages/TodoListPage/todolistPage.tsx";
+import { ProfilePage } from "../pages/ProfilePage/ProfilePage.tsx";
+import { TodoListPage } from "../pages/TodoListPage/todolistPage.tsx";
+import { Provider } from "react-redux";
+import { store } from "./store.ts";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: (
+      <Provider store={store}>
+        <App />
+      </Provider>
+    ),
     children: [
       {
         index: true,
