@@ -1,14 +1,16 @@
-import { LoadingOutlined } from "@ant-design/icons";
-import { Col, notification, Row, Spin } from "antd";
+import { fetchTodos } from "@/api/todosApi";
+import { AddTodoForm } from "@/components/AddTodoForm/AddTodoForm";
+import { TodosFilter } from "@/components/TodosFilter/TodosFilter";
+import { TodosList } from "@/components/TodosList/TodosList";
+import { getErrorMessage } from "@/utils/getErrorMessage";
+import { isEqualTwoArrays } from "@/utils/isEqualTwoArrays";
+import { Col, notification, Row } from "antd";
 import { useCallback, useEffect, useState } from "react";
-import { fetchTodos } from "../../api/todoApi";
-import { AddTodoForm } from "../../components/AddTodoForm/AddTodoForm";
-import { TodosFilter } from "../../components/TodosFilter/TodosFilter";
-import { TodosList } from "../../components/TodosList/TodosList";
-import { getErrorMessage } from "../../utils/getErrorMessage";
-import type { FilterStatus, Todo, TodoInfo } from "../../types/todos";
+import type { FilterStatus, Todo, TodoInfo } from "@/types/todos";
 
 type LoadingStatus = "idle" | "pending" | "succeed" | "failed";
+
+const TODOS_UPDSATE_TIME = 5_000;
 
 export const TodoListPage = () => {
   const [todosData, setTodosData] = useState<Todo[]>([]);
@@ -17,42 +19,55 @@ export const TodoListPage = () => {
     inWork: 0,
     completed: 0,
   });
-  const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>("idle");
-  const [appError, setAppError] = useState<string>("");
-  const [isUpdateMode, setIsUpdateMode] = useState<boolean>(true);
   const [filterStatus, setfilterStatus] = useState<FilterStatus>("all");
+
+  const [appError, setAppError] = useState<string>("");
   const [api, contextHolder] = notification.useNotification();
+
+  const [isUpdateMode, setIsUpdateMode] = useState<boolean>(true);
+  const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>("idle");
+
   const isLoading = loadingStatus === "pending";
 
-  if (appError) api["error"]({ message: appError, placement: "bottomLeft" });
+  useEffect(() => {
+    if (appError) {
+      api["error"]({ message: appError, placement: "bottomLeft" });
+    }
+  }, [appError]);
 
-  const fetchTodosByFilter = useCallback(async (filterStatus: FilterStatus) => {
-    setLoadingStatus(() => "pending");
+  const fetchTodosByFilter = useCallback(async () => {
     setAppError(() => "");
     try {
+      setLoadingStatus("pending");
       const todos = await fetchTodos(filterStatus);
-      setTodosData(() => todos.data);
-      setTodosInfo(() => todos.info ?? { all: 0, completed: 0, inWork: 0 });
+      if (!isEqualTwoArrays(todosData, todos.data)) {
+        setTodosData(todos.data);
+      }
+      if (todos.info) {
+        setTodosInfo(todos.info);
+      }
+
       setLoadingStatus(() => "succeed");
-      setfilterStatus(filterStatus);
     } catch (err) {
       setAppError(() => getErrorMessage(err));
       setLoadingStatus(() => "failed");
     }
-  }, []);
+  }, [todosData, filterStatus]);
 
   useEffect(() => {
-    if (!isUpdateMode) return;
+    if (!isUpdateMode) {
+      return;
+    }
 
     const intervalId = setInterval(() => {
-      fetchTodosByFilter(filterStatus);
-    }, 5000);
-    fetchTodosByFilter(filterStatus);
+      fetchTodosByFilter();
+    }, TODOS_UPDSATE_TIME);
+    fetchTodosByFilter();
 
     return () => {
       clearInterval(intervalId);
     };
-  }, [fetchTodosByFilter, filterStatus, isUpdateMode]);
+  }, [fetchTodosByFilter, filterStatus, isUpdateMode, todosData]);
 
   return (
     <>
@@ -60,33 +75,28 @@ export const TodoListPage = () => {
         <Col span={8} offset={8}>
           <AddTodoForm
             isLoading={isLoading}
-            onUpdate={() => fetchTodosByFilter(filterStatus)}
+            onUpdate={() => fetchTodosByFilter()}
           />
         </Col>
       </Row>
       <Row>
         <Col span={8} offset={8}>
           <TodosFilter
+            isLoading={isLoading}
             filterStatus={filterStatus}
             todoInfo={todosInfo}
-            fetchTodosByFilter={fetchTodosByFilter}
+            setfilterStatus={setfilterStatus}
           />
         </Col>
       </Row>
       <Row>
         <Col span={8} offset={8}>
-          {isLoading ? (
-            <Spin size="large" indicator={<LoadingOutlined spin />} />
-          ) : (
-            <>
-              <TodosList
-                isLoading={isLoading}
-                todos={todosData}
-                onUpdate={() => fetchTodosByFilter(filterStatus)}
-                updateMode={setIsUpdateMode}
-              />
-            </>
-          )}
+          <TodosList
+            isLoading={isLoading}
+            todos={todosData}
+            onUpdate={() => fetchTodosByFilter()}
+            updateMode={setIsUpdateMode}
+          />
         </Col>
       </Row>
       {contextHolder}

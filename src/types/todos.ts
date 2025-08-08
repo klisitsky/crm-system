@@ -14,14 +14,14 @@ export interface Todo {
 
 export interface TodoInfo {
   all: number;
-  completed: number ;
+  completed: number;
   inWork: number;
 }
 
 export interface MetaResponse<T, N> {
-	data: T[]
-	info?: N
-	meta: {
-		totalAmount: number
-	}
+  data: T[];
+  info?: N;
+  meta: {
+    totalAmount: number;
+  };
 }

@@ -1,7 +1,7 @@
 import { List, Typography } from "antd";
 import { memo } from "react";
-import { TodoCard } from "../TodoCard/TodoCard";
-import type { Todo } from "../../types/todos";
+import { TodoCard } from "@/components/TodoCard/TodoCard";
+import type { Todo } from "@/types/todos";
 
 interface TodosList {
   todos: Todo[];
@@ -10,30 +10,26 @@ interface TodosList {
   updateMode?: (mode: boolean) => void;
 }
 
-export const TodosList: React.FC<TodosList> = memo(
-  ({ todos, isLoading, onUpdate, updateMode }) => {
-    return todos.length ? (
-      <List
-        split={false}
-        dataSource={todos}
-        renderItem={(todo) => (
-          <List.Item style={{ padding: 0, margin: "15px 0" }}>
-            <TodoCard
-              isLoading={isLoading}
-              onUpdate={onUpdate}
-              todo={todo}
-              key={todo.id}
-              updateMode={updateMode}
-            >
-              {todo.title}
-            </TodoCard>
-          </List.Item>
-        )}
-      />
-    ) : (
-      <Typography.Title level={4} type="secondary">
-        Список задач пуст
-      </Typography.Title>
-    );
-  }
-);
+export const TodosList: React.FC<TodosList> = memo(({ todos, isLoading, onUpdate, updateMode }) => {
+  return todos.length ? (
+    <List
+      split={false}
+      dataSource={todos}
+      renderItem={(todo) => (
+        <List.Item style={{ padding: 0, margin: "15px 0" }}>
+          <TodoCard
+            isLoading={isLoading}
+            onUpdate={onUpdate}
+            todo={todo}
+            key={todo.id}
+            updateMode={updateMode}
+          />
+        </List.Item>
+      )}
+    />
+  ) : (
+    <Typography.Title level={4} type="secondary">
+      Список задач пуст
+    </Typography.Title>
+  );
+});

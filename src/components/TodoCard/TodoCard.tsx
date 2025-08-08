@@ -1,98 +1,141 @@
+import { deleteTodo, updateTodo } from "@/api/todosApi";
+import { getErrorMessage } from "@/utils/getErrorMessage";
+import CloseCircleOutlined from "@ant-design/icons/lib/icons/CloseCircleOutlined";
 import DeleteFilled from "@ant-design/icons/lib/icons/DeleteFilled";
 import EditFilled from "@ant-design/icons/lib/icons/EditFilled";
+import SaveFilled from "@ant-design/icons/lib/icons/SaveFilled";
 import { Button, Flex, Typography } from "antd";
 import Card from "antd/es/card/Card";
 import Checkbox from "antd/es/checkbox/Checkbox";
-import React, { memo, useCallback, useState } from "react";
-import { EditTodoForm } from "./EditTodoForm/EditTodoForm";
-import { deleteTodo, updateTodo } from "../../api/todoApi";
-import { getErrorMessage } from "../../utils/getErrorMessage";
-import type { Todo } from "../../types/todos";
-import s from './TodoCard.module.scss'
+import React, { memo, useState } from "react";
+import { TodoForm } from "../TodoForm/TodoForm";
+import s from "./TodoCard.module.scss";
+import type { Todo } from "@/types/todos";
 
 interface TodoCard {
-  children: string;
   todo: Todo;
   isLoading: boolean;
   onUpdate?: () => void;
   updateMode?: (mode: boolean) => void;
 }
 
-export const TodoCard: React.FC<TodoCard> = memo(
-  ({ children, todo, isLoading, onUpdate, updateMode }) => {
-    const [isEdit, setIsEdit] = useState<boolean>(false);
+export const TodoCard: React.FC<TodoCard> = memo(({ todo, isLoading, onUpdate, updateMode }) => {
+  const [isEdit, setIsEdit] = useState<boolean>(false);
 
-    const handleUpdateTodoStatus = useCallback(() => {
-      updateTodo(todo.id, !todo.isDone, todo.title)
-        .then(() => {
-          onUpdate?.();
-        })
-        .catch((err) => {
-          alert(getErrorMessage(err));
-        });
-    }, [todo, onUpdate]);
+  const handleUpdateTodoStatus = () => {
+    updateTodo(todo.id, { isDone: !todo.isDone })
+      .then(() => {
+        if (onUpdate) {
+          onUpdate();
+        }
+      })
+      .catch((err) => {
+        alert(getErrorMessage(err));
+      });
+  };
 
-    const handleOpenEditForm = useCallback(() => {
-      setIsEdit((prev) => !prev);
-      updateMode?.(false);
-    }, [updateMode]);
+  const handleUpdateTodoTitle = (values: Record<"title", string>) => {
+    updateTodo(todo.id, { title: values.title })
+      .then(() => {
+        if (updateMode) {
+          updateMode(true);
+        }
+      })
+      .catch((err) => {
+        alert(getErrorMessage(err));
+      });
+    setIsEdit(false);
+  };
 
-    const handleDeleteTodo = useCallback(() => {
-      deleteTodo(todo.id)
-        .then(() => {
-          onUpdate?.();
-        })
-        .catch((err) => {
-          alert(getErrorMessage(err));
-        });
-    }, [todo.id, onUpdate]);
+  const handleDeleteTodo = () => {
+    deleteTodo(todo.id)
+      .then(() => {
+        if (onUpdate) {
+          onUpdate();
+        }
+      })
+      .catch((err) => {
+        alert(getErrorMessage(err));
+      });
+  };
 
-    return (
-      <Card size="small" style={{ width: "100%" }}>
-        <Flex gap="small" justify="space-between">
-          <Checkbox
-            checked={todo.isDone}
-            disabled={isLoading}
-            onChange={handleUpdateTodoStatus}
-          ></Checkbox>
-          {isEdit ? (
-            <EditTodoForm
-              todo={todo}
-              isLoading={isLoading}
-              updateMode={updateMode}
-              handleDeleteTodo={handleDeleteTodo}
+  const startEdit = () => {
+    setIsEdit(true);
+    if (updateMode) {
+      updateMode(false);
+    }
+  };
+
+  const endEdit = () => {
+    setIsEdit(false);
+    if (updateMode) {
+      updateMode(true);
+    }
+  };
+
+  return (
+    <Card size="small" style={{ width: "100%" }}>
+      <Flex gap="small" align="center" justify="space-between">
+        <Checkbox checked={todo.isDone} disabled={isLoading} onChange={handleUpdateTodoStatus} />
+        {isEdit ? (
+          <TodoForm
+            id="editForm"
+            initialValues={{ title: todo.title }}
+            callback={handleUpdateTodoTitle}
+            inputProps={{
+              disabled: isLoading,
+              variant: "underlined",
+              size: "small",
+              style: { backgroundColor: "transparent" },
+            }}
+          />
+        ) : (
+          <Typography.Text
+            className={`${todo.isDone ? s.todoIsDone : ""}`}
+            style={{ margin: 0, flex: 1 }}
+          >
+            {todo.title}
+          </Typography.Text>
+        )}
+        {isEdit ? (
+          <>
+            <Button
+              form="editForm"
+              type="primary"
+              disabled={isLoading}
+              size="middle"
+              icon={<SaveFilled key="save" />}
+              htmlType="submit"
             />
-          ) : (
-            <Flex
-              align="center"
-              gap="small"
-              justify="space-between"
-              style={{ width: "100%" }}
-            >
-              <Typography.Text className={`${todo.isDone ? s.todoIsDone : ""}`}>
-                {children}
-              </Typography.Text>
-              <Flex gap="middle">
-                <Button
-                  type="primary"
-                  onClick={handleOpenEditForm}
-                  disabled={isLoading}
-                  size="middle"
-                  icon={<EditFilled key="edit" />}
-                ></Button>
-                <Button
-                  color="danger"
-                  variant="solid"
-                  onClick={handleDeleteTodo}
-                  disabled={isLoading}
-                  size="middle"
-                  icon={<DeleteFilled key="delete" />}
-                ></Button>
-              </Flex>
-            </Flex>
-          )}
-        </Flex>
-      </Card>
-    );
-  }
-);
+            <Button
+              form="editForm"
+              color="blue"
+              variant="outlined"
+              onClick={endEdit}
+              disabled={isLoading}
+              size="middle"
+              htmlType="reset"
+              icon={<CloseCircleOutlined key="close" />}
+            />
+          </>
+        ) : (
+          <Button
+            type="primary"
+            onClick={startEdit}
+            disabled={isLoading}
+            size="middle"
+            icon={<EditFilled key="edit" />}
+          />
+        )}
+        <Button
+          color="danger"
+          variant="solid"
+          onClick={handleDeleteTodo}
+          disabled={isLoading}
+          size="middle"
+          icon={<DeleteFilled key="delete" />}
+        />
+      </Flex>
+    </Card>
+  );
+});
