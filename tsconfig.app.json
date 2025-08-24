@@ -21,10 +21,9 @@
     /* Bundler mode */
     "composite": true,
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
-    "emitDeclarationOnly": true,
+    "emitDeclarationOnly": false,
     "jsx": "react-jsx",
     "esModuleInterop": true,
 
