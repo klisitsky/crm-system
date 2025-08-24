@@ -35,7 +35,12 @@ export const TodoForm: React.FC<TodoForm> = ({ id, initialValues, callback, inpu
           {
             required: true,
             message: "Поле не может быть пустым",
-            transform: (value) => value.trim(),
+            transform: (value) => {
+              if (value) {
+                return value.trim()
+              }
+              return value
+            },
           },
           {
             min: MIN_SYMBOLS_COUNT,
