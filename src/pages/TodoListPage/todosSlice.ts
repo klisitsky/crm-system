@@ -102,17 +102,9 @@ export const todosSlice = createSlice({
     selectFilterStatus: (state) => state.filterStatus,
     selectUpdatingTodosMode: (state) => state.isUpdatingTodosMode,
     selectIsFetchTodosPending: (state) => state.fetchTodosStatus === "pending",
-    selectIsFetchTodosSucceed: (state) => state.fetchTodosStatus === "succeed",
-    selectIsFetchTodosFailed: (state) => state.fetchTodosStatus === "failed",
     selectIsCreateTodoPending: (state) => state.createTodoStatus === "pending",
-    selectIsCreateTodoSucceed: (state) => state.createTodoStatus === "succeed",
-    selectIsCreateTodoFailed: (state) => state.createTodoStatus === "failed",
     selectIsUpdateTodoPending: (state) => state.updateTodoStatus === "pending",
-    selectIsUpdateTodoSucceed: (state) => state.updateTodoStatus === "succeed",
-    selectIsUpdateTodoFailed: (state) => state.updateTodoStatus === "failed",
     selectIsDeleteTodoPending: (state) => state.deleteTodoStatus === "pending",
-    selectIsDeleteTodoSucceed: (state) => state.deleteTodoStatus === "succeed",
-    selectIsDeleteTodoFailed: (state) => state.deleteTodoStatus === "failed",
   },
 });
 
