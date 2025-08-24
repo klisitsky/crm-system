@@ -1,11 +1,11 @@
+import { instance } from "./instanceApi";
 import type {
   FilterStatus,
   MetaResponse,
   Todo,
   TodoInfo,
   TodoRequest,
-} from "../types/todos";
-import { instance } from "./instanceApi";
+} from "@/types/todos";
 
 export const todosApi = {
   fetchTodos: async (filterStatus?: FilterStatus) => {

@@ -3,9 +3,6 @@ import { memo, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/redux";
 import { createTodo, todosSlice } from "../../pages/TodoListPage/todosSlice";
 
-export const MIN_SYMBOLS_COUNT = 2;
-export const MAX_SYMBOLS_COUNT = 64;
-
 export const AddTodoForm: React.FC = memo(({}) => {
   const dispatch = useAppDispatch();
   const [form] = Form.useForm();
@@ -26,46 +23,27 @@ export const AddTodoForm: React.FC = memo(({}) => {
   );
 
   return (
-    <Form form={form} validateTrigger="none" onFinish={handleCreateTodo}>
-      <Flex gap="large" justify="center">
-        <Form.Item
-          style={{ margin: 0 }}
-          name="todoValue"
-          rules={[
-            {
-              required: true,
-              message: "Поле не может быть пустым",
-              transform: (value) => value.trim(),
-            },
-            {
-              min: MIN_SYMBOLS_COUNT,
-              message: "Длина менее 2 символов",
-            },
-            {
-              max: MAX_SYMBOLS_COUNT,
-              message: "Длина более 64 символов",
-            },
-          ]}
-        >
-          <Input
-            placeholder="Todo To Be Done..."
-            disabled={disabled}
-            variant="underlined"
-            size="middle"
-            style={{ backgroundColor: "transparent" }}
-          />
-        </Form.Item>
-        <Form.Item style={{ margin: 0 }}>
-          <Button
-            type="primary"
-            disabled={disabled}
-            style={{ width: "100px" }}
-            htmlType="submit"
-          >
-            Add
-          </Button>
-        </Form.Item>
-      </Flex>
-    </Form>
+    <Flex gap="large" justify="center">
+      <TodoForm
+        id="addForm"
+        callback={handleCreateTodo}
+        inputProps={{
+          placeholder: "Todo To Be Done...",
+          disabled: isLoading,
+          variant: "underlined",
+          size: "middle",
+          style: { backgroundColor: "transparent" },
+        }}
+      />
+      <Button
+        form="addForm"
+        type="primary"
+        disabled={isLoading}
+        style={{ width: "100px" }}
+        htmlType="submit"
+      >
+        Add
+      </Button>
+    </Flex>
   );
 });

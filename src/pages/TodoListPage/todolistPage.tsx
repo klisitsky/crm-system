@@ -7,6 +7,8 @@ import { TodosFilter } from "../../components/TodosFilter/TodosFilter";
 import { TodosList } from "../../components/TodosList/TodosList";
 import { fetchTodos, todosSlice } from "./todosSlice";
 
+const TODOS_UPDSATE_TIME = 5_000;
+
 export const TodoListPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const isPending = useAppSelector(todosSlice.selectors.selectIsFetchTodosPending);
@@ -14,11 +16,13 @@ export const TodoListPage: React.FC = () => {
   const filterStatus = useAppSelector(todosSlice.selectors.selectFilterStatus);
 
   useEffect(() => {
-    if (!isUpdatingTodosMode) return;
+    if (!isUpdateMode) {
+      return;
+    }
 
     const intervalId = setInterval(() => {
       dispatch(fetchTodos({ filterStatus }));
-    }, 5000);
+    }, TODOS_UPDSATE_TIME);
     dispatch(fetchTodos({ filterStatus }));
 
     return () => {

@@ -1,9 +1,8 @@
 import { Button, Flex, Typography } from "antd";
 import { memo } from "react";
-import { useAppDispatch, useAppSelector } from "../../app/redux";
-import { todosSlice } from "../../pages/TodoListPage/todosSlice";
-import type { FilterStatus } from "../../types/todos";
 import s from "./TodosFilter.module.scss";
+import type { Dispatch } from "react";
+import type { FilterStatus, TodoInfo } from "@/types/todos";
 
 const { Text } = Typography;
 

@@ -1,8 +1,7 @@
 import { List, Typography } from "antd";
 import { memo } from "react";
-import { useAppSelector } from "../../app/redux";
-import { TodoCard } from "../TodoCard/TodoCard";
-import { todosSlice } from "../../pages/TodoListPage/todosSlice";
+import { TodoCard } from "@/components/TodoCard/TodoCard";
+import type { Todo } from "@/types/todos";
 
 export const TodosList: React.FC = memo(() => {
   const todosData = useAppSelector(todosSlice.selectors.selectTodosData);
