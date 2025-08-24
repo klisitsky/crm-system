@@ -22,6 +22,7 @@
     "composite": true,
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": false,
     "moduleDetection": "force",
     "emitDeclarationOnly": false,
     "jsx": "react-jsx",
