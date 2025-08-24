@@ -1,27 +1,43 @@
-import { Layout } from "antd";
-import Sider from "antd/es/layout/Sider";
-import { Content } from "antd/es/layout/layout";
+import { LoadingOutlined } from "@ant-design/icons";
+import { Flex } from "antd";
+import notification from "antd/es/notification";
+import Spin from "antd/es/spin";
+import { useEffect } from "react";
 import { Outlet } from "react-router";
+import { REFRESH_TOKEN } from "../components/constants/localStorageValues";
+import { authSlice, checkAuth } from "../pages/AuthPage/AuthSlice";
 import "./App.css";
-import { AppMenu } from "../components/AppMenu/AppMenu";
+import { appSlice } from "./appSlice";
+import { useAppDispatch, useAppSelector } from "./redux";
 
 function App() {
-  return (
-    <Layout>
-      <Sider
-        theme="dark"
-        breakpoint="lg"
-        collapsedWidth="0"
-        style={{ minHeight: "100vh" }}
-      >
-        <AppMenu />
-      </Sider>
-      <Layout>
-        <Content style={{ margin: "25px" }}>
-          <Outlet />
-        </Content>
-      </Layout>
-    </Layout>
+  const dispatch = useAppDispatch();
+  const [api, contextHolder] = notification.useNotification();
+
+  const appError = useAppSelector(appSlice.selectors.selectError);
+  const isPending = useAppSelector(authSlice.selectors.selectIsRefreshTokenStatusPending);
+
+  useEffect(() => {
+    if (localStorage.getItem(REFRESH_TOKEN)) {
+      dispatch(checkAuth());
+    }
+  }, []);
+
+  useEffect(() => {
+    if (appError) {
+      api["error"]({ message: appError, placement: "bottomLeft" });
+    }
+  }, [appError]);
+
+  return isPending ? (
+    <Flex justify="center">
+      <Spin size="large" indicator={<LoadingOutlined spin />} />
+    </Flex>
+  ) : (
+    <>
+      <Outlet />
+      {contextHolder}
+    </>
   );
 }
 

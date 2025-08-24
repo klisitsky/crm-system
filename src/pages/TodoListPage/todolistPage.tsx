@@ -1,5 +1,5 @@
 import { LoadingOutlined } from "@ant-design/icons";
-import { Col, notification, Row, Spin } from "antd";
+import { Col, Flex, Row, Spin } from "antd";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/redux";
 import { AddTodoForm } from "../../components/AddTodoForm/AddTodoForm";
@@ -9,18 +9,9 @@ import { fetchTodos, todosSlice } from "./todosSlice";
 
 export const TodoListPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const isPending = useAppSelector(
-    todosSlice.selectors.selectIsFetchTodosPending
-  );
-  const error = useAppSelector(todosSlice.selectors.selectError);
-  const isUpdatingTodosMode = useAppSelector(
-    todosSlice.selectors.selectUpdatingTodosMode
-  );
+  const isPending = useAppSelector(todosSlice.selectors.selectIsFetchTodosPending);
+  const isUpdatingTodosMode = useAppSelector(todosSlice.selectors.selectUpdatingTodosMode);
   const filterStatus = useAppSelector(todosSlice.selectors.selectFilterStatus);
-
-  const [api, contextHolder] = notification.useNotification();
-
-  if (error) api["error"]({ message: error, placement: "bottomLeft" });
 
   useEffect(() => {
     if (!isUpdatingTodosMode) return;
@@ -50,7 +41,9 @@ export const TodoListPage: React.FC = () => {
       <Row>
         <Col span={8} offset={8}>
           {isPending ? (
-            <Spin size="large" indicator={<LoadingOutlined spin />} />
+            <Flex justify="center">
+              <Spin size="large" indicator={<LoadingOutlined spin />} />
+            </Flex>
           ) : (
             <>
               <TodosList />
@@ -58,7 +51,6 @@ export const TodoListPage: React.FC = () => {
           )}
         </Col>
       </Row>
-      {contextHolder}
     </>
   );
 };

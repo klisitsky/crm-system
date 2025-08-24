@@ -1,19 +1,27 @@
 import { combineSlices, configureStore } from "@reduxjs/toolkit/react";
 import { todosApi } from "../api/todosApi";
 import { todosSlice } from "../pages/TodoListPage/todosSlice";
+import { authSlice } from "../pages/AuthPage/AuthSlice";
+import { authApi } from "../api/authApi";
 import { appSlice } from "./appSlice";
+import { setupAxiosInterceptors } from "../api/instanceApi";
+
 
 export const extraArgument = {
-  todosApi
+  todosApi,
+  authApi,
 };
 
 const rootReducer = combineSlices({
   [todosSlice.name]: todosSlice.reducer,
+  [authSlice.name]: authSlice.reducer,
   [appSlice.name]: appSlice.reducer,
 });
 
 export const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ thunk: { extraArgument } }),
+    getDefaultMiddleware({ thunk: { extraArgument } })
 });
+
+setupAxiosInterceptors(store.dispatch, store.getState);

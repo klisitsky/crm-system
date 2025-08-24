@@ -1,14 +1,10 @@
-import type { EntityState, PayloadAction } from "@reduxjs/toolkit/react";
-import {
-  createEntityAdapter,
-  createSelector,
-  createSlice,
-} from "@reduxjs/toolkit/react";
+import { createEntityAdapter, createSelector, createSlice } from "@reduxjs/toolkit/react";
 import { createAppAsyncThunk } from "../../app/redux";
-import type { FilterStatus, Todo, TodoId, TodoInfo } from "../../types/todos";
 import { getErrorMessage } from "../../utils/getErrorMessage";
-
-export type LoadingStatus = "idle" | "pending" | "succeed" | "failed";
+import { appSlice } from "../../app/appSlice";
+import type { LoadingStatus } from "../../types/common";
+import type { FilterStatus, Todo, TodoId, TodoInfo } from "../../types/todos";
+import type { EntityState, PayloadAction } from "@reduxjs/toolkit/react";
 
 interface DomainModelTodoData {
   todoId: TodoId;
@@ -24,7 +20,6 @@ type InitialTodosState = EntityState<Todo, number> & {
   createTodoStatus: LoadingStatus;
   updateTodoStatus: LoadingStatus;
   deleteTodoStatus: LoadingStatus;
-  error: string;
 };
 
 const todosAdapter = createEntityAdapter<Todo>();
@@ -52,9 +47,6 @@ export const todosSlice = createSlice({
     },
     updateFilterStatus(state, action: PayloadAction<FilterStatus>) {
       state.filterStatus = action.payload;
-    },
-    setError(state, action: PayloadAction<string>) {
-      state.error = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -103,16 +95,12 @@ export const todosSlice = createSlice({
   },
   selectors: {
     selectTodosData: createSelector(
-      [
-        (state: InitialTodosState) => state.entities,
-        (state: InitialTodosState) => state.ids,
-      ],
+      [(state: InitialTodosState) => state.entities, (state: InitialTodosState) => state.ids],
       (entities, ids) => ids.map((id) => entities[id])
     ),
     selectTodosInfo: (state) => state.todoInfo,
     selectFilterStatus: (state) => state.filterStatus,
     selectUpdatingTodosMode: (state) => state.isUpdatingTodosMode,
-    selectError: (state) => state.error,
     selectIsFetchTodosPending: (state) => state.fetchTodosStatus === "pending",
     selectIsFetchTodosSucceed: (state) => state.fetchTodosStatus === "succeed",
     selectIsFetchTodosFailed: (state) => state.fetchTodosStatus === "failed",
@@ -135,11 +123,10 @@ export const fetchTodos = createAppAsyncThunk(
     { extra, getState, dispatch, rejectWithValue }
   ) => {
     try {
-      return await extra.todosApi.fetchTodos(
-        arg.filterStatus ?? getState().todos.filterStatus
-      );
+      dispatch(appSlice.actions.setError(""));
+      return await extra.todosApi.fetchTodos(arg.filterStatus ?? getState().todos.filterStatus);
     } catch (err) {
-      dispatch(todosSlice.actions.setError(getErrorMessage(err)));
+      dispatch(appSlice.actions.setError(getErrorMessage(err)));
       return rejectWithValue(null);
     }
   }
@@ -149,10 +136,11 @@ export const createTodo = createAppAsyncThunk(
   "todos/createTodo",
   async (title: string, { dispatch, extra, rejectWithValue }) => {
     try {
+      dispatch(appSlice.actions.setError(""));
       await extra.todosApi.createTodo(title);
       await dispatch(fetchTodos({}));
     } catch (err) {
-      dispatch(todosSlice.actions.setError(getErrorMessage(err)));
+      dispatch(appSlice.actions.setError(getErrorMessage(err)));
       return rejectWithValue(null);
     }
   }
@@ -160,11 +148,9 @@ export const createTodo = createAppAsyncThunk(
 
 export const updateTodo = createAppAsyncThunk(
   "todos/updateTodo",
-  async (
-    arg: DomainModelTodoData,
-    { extra, getState, dispatch, rejectWithValue }
-  ) => {
+  async (arg: DomainModelTodoData, { extra, getState, dispatch, rejectWithValue }) => {
     try {
+      dispatch(appSlice.actions.setError(""));
       const currentTodo = getState().todos.entities[arg.todoId];
 
       await extra.todosApi.updateTodo(
@@ -174,7 +160,7 @@ export const updateTodo = createAppAsyncThunk(
       );
       await dispatch(fetchTodos({}));
     } catch (err) {
-      dispatch(todosSlice.actions.setError(getErrorMessage(err)));
+      dispatch(appSlice.actions.setError(getErrorMessage(err)));
       return rejectWithValue(null);
     }
   }
@@ -184,10 +170,11 @@ export const deleteTodo = createAppAsyncThunk(
   "todos/deleteTodo",
   async (todoId: number, { extra, rejectWithValue, dispatch }) => {
     try {
+      dispatch(appSlice.actions.setError(""));
       await extra.todosApi.deleteTodo(todoId);
       await dispatch(fetchTodos({}));
     } catch (err) {
-      dispatch(todosSlice.actions.setError(getErrorMessage(err)));
+      dispatch(appSlice.actions.setError(getErrorMessage(err)));
       return rejectWithValue(null);
     }
   }
