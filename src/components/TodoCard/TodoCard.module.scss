@@ -1,0 +1,9 @@
+.todoIsDone {
+  text-decoration: line-through;
+  color: var(--color-light-500);
+}
+
+.errorMessage {
+  font-size: 12px;
+  color: var(--color-danger-500);
+}
