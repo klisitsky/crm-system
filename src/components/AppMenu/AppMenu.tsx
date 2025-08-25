@@ -1,8 +1,8 @@
 import UnorderedListOutlined from "@ant-design/icons/lib/icons/UnorderedListOutlined";
 import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
-import type { MenuProps } from "antd";
 import Menu from "antd/es/menu/menu";
 import { NavLink, useLocation } from "react-router";
+import type { MenuProps } from "antd";
 
 type MenuItem = Required<MenuProps>["items"][number];
 

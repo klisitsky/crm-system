@@ -1,7 +1,8 @@
+import { useAppSelector } from "@/app/redux";
+import { todosSlice } from "@/pages/TodoListPage/todosSlice";
 import { List, Typography } from "antd";
 import { memo } from "react";
 import { TodoCard } from "@/components/TodoCard/TodoCard";
-import type { Todo } from "@/types/todos";
 
 export const TodosList: React.FC = memo(() => {
   const todosData = useAppSelector(todosSlice.selectors.selectTodosData);
@@ -12,9 +13,7 @@ export const TodosList: React.FC = memo(() => {
       dataSource={todosData}
       renderItem={(todo) => (
         <List.Item style={{ padding: 0, margin: "15px 0" }}>
-          <TodoCard todo={todo} key={todo.id}>
-            {todo.title}
-          </TodoCard>
+          <TodoCard todo={todo} key={todo.id}></TodoCard>
         </List.Item>
       )}
     />

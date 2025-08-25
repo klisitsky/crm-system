@@ -1,26 +1,18 @@
-import { Button, Flex, Form, Input } from "antd";
+import { useAppDispatch, useAppSelector } from "@/app/redux";
+import { TodoForm } from "@/components/TodoForm/TodoForm";
+import { createTodo, todosSlice } from "@/pages/TodoListPage/todosSlice";
+import { Button, Flex } from "antd";
 import { memo, useCallback } from "react";
-import { useAppDispatch, useAppSelector } from "../../app/redux";
-import { createTodo, todosSlice } from "../../pages/TodoListPage/todosSlice";
 
 export const AddTodoForm: React.FC = memo(({}) => {
   const dispatch = useAppDispatch();
-  const [form] = Form.useForm();
-  const isFetchTodosPending = useAppSelector(
-    todosSlice.selectors.selectIsFetchTodosPending
-  );
-  const isCreateTodoPending = useAppSelector(
-    todosSlice.selectors.selectIsCreateTodoPending
-  );
+  const isFetchTodosPending = useAppSelector(todosSlice.selectors.selectIsFetchTodosPending);
+  const isCreateTodoPending = useAppSelector(todosSlice.selectors.selectIsCreateTodoPending);
   const disabled = isFetchTodosPending && isCreateTodoPending;
 
-  const handleCreateTodo = useCallback(
-    (values: Record<string, string>) => {
-      dispatch(createTodo(values.todoValue));
-      form.resetFields();
-    },
-    [form]
-  );
+  const handleCreateTodo = useCallback((values: Record<string, string>) => {
+    dispatch(createTodo(values.title));
+  }, []);
 
   return (
     <Flex gap="large" justify="center">
@@ -29,7 +21,7 @@ export const AddTodoForm: React.FC = memo(({}) => {
         callback={handleCreateTodo}
         inputProps={{
           placeholder: "Todo To Be Done...",
-          disabled: isLoading,
+          disabled,
           variant: "underlined",
           size: "middle",
           style: { backgroundColor: "transparent" },
@@ -38,7 +30,7 @@ export const AddTodoForm: React.FC = memo(({}) => {
       <Button
         form="addForm"
         type="primary"
-        disabled={isLoading}
+        disabled={disabled}
         style={{ width: "100px" }}
         htmlType="submit"
       >

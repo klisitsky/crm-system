@@ -1,12 +1,12 @@
 export const isEqualTwoArrays = (
-  prevProps: Record<string, any>[],
-  props: Record<string, any>[]
+  firstArr: Record<string, any>[],
+  secondArr: Record<string, any>[]
 ): boolean => {
-  if (prevProps.length !== props.length) {
+  if (secondArr.length !== firstArr.length) {
     return false;
   }
-  for (let i = 0; i <= prevProps.length; i++) {
-    if (JSON.stringify(prevProps[i]) !== JSON.stringify(props[i])) {
+  for (let i = 0; i <= secondArr.length; i++) {
+    if (JSON.stringify(secondArr[i]) !== JSON.stringify(firstArr[i])) {
       return false;
     }
   }

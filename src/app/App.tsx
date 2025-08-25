@@ -4,11 +4,11 @@ import notification from "antd/es/notification";
 import Spin from "antd/es/spin";
 import { useEffect } from "react";
 import { Outlet } from "react-router";
-import { REFRESH_TOKEN } from "../components/constants/localStorageValues";
-import { authSlice, checkAuth } from "../pages/AuthPage/AuthSlice";
 import "./App.css";
 import { appSlice } from "./appSlice";
 import { useAppDispatch, useAppSelector } from "./redux";
+import { authSlice, checkAuth } from "@/pages/AuthPage/AuthSlice";
+import { REFRESH_TOKEN } from "@/components/constants/localStorageValues";
 
 function App() {
   const dispatch = useAppDispatch();

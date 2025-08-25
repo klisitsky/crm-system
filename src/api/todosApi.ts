@@ -1,11 +1,5 @@
 import { instance } from "./instanceApi";
-import type {
-  FilterStatus,
-  MetaResponse,
-  Todo,
-  TodoInfo,
-  TodoRequest,
-} from "@/types/todos";
+import type { FilterStatus, MetaResponse, Todo, TodoInfo, TodoRequest } from "@/types/todos";
 
 export const todosApi = {
   fetchTodos: async (filterStatus?: FilterStatus) => {
@@ -22,14 +16,8 @@ export const todosApi = {
     };
     return instance.post<Todo>("/todos", requestBody).then((res) => res);
   },
-  updateTodo: async (id: number, isDone: boolean, title: string) => {
-    const requestBody: TodoRequest = {
-      isDone,
-      title,
-    };
-    return instance
-      .put<Todo>(`/todos/${id}`, requestBody)
-      .then((res) => res.data);
+  updateTodo: async (id: number, todoRequestBody: TodoRequest) => {
+    return instance.put<Todo>(`/todos/${id}`, todoRequestBody).then((res) => res.data);
   },
   deleteTodo: async (id: number) => {
     return instance.delete<Todo>(`/todos/${id}`).then((res) => res.data);

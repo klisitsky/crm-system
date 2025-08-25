@@ -1,7 +1,7 @@
 import { Form } from "antd";
-import React from "react";
-import { MAX_SYMBOLS_COUNT, MIN_SYMBOLS_COUNT } from "../constants/todos";
+import React, { memo } from "react";
 import Input from "antd/es/input/Input";
+import { MAX_SYMBOLS_COUNT, MIN_SYMBOLS_COUNT } from "../constants/todos";
 import type { InputProps } from "antd/es/input/Input";
 
 interface TodoForm {
@@ -11,7 +11,7 @@ interface TodoForm {
   inputProps?: InputProps;
 }
 
-export const TodoForm: React.FC<TodoForm> = ({ id, initialValues, callback, inputProps }) => {
+export const TodoForm: React.FC<TodoForm> = memo(({ id, initialValues, callback, inputProps }) => {
   const [form] = Form.useForm();
 
   const onFinish = (values: Record<"title", string>) => {
@@ -37,9 +37,9 @@ export const TodoForm: React.FC<TodoForm> = ({ id, initialValues, callback, inpu
             message: "Поле не может быть пустым",
             transform: (value) => {
               if (value) {
-                return value.trim()
+                return value.trim();
               }
-              return value
+              return value;
             },
           },
           {
@@ -56,6 +56,4 @@ export const TodoForm: React.FC<TodoForm> = ({ id, initialValues, callback, inpu
       </Form.Item>
     </Form>
   );
-};
-
-export default TodoForm;
+});

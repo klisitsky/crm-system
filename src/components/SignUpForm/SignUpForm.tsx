@@ -1,9 +1,9 @@
+import { useAppDispatch, useAppSelector } from "@/app/redux";
+import { authSlice, signUpUser } from "@/pages/AuthPage/AuthSlice";
 import { Button, Form, Input, Result } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { useAppDispatch, useAppSelector } from "../../app/redux";
-import { authSlice, signUpUser } from "../../pages/AuthPage/AuthSlice";
-import type { UserRegistration } from "../../types/auth";
+import type { UserRegistration } from "@/types/auth";
 
 export type UserRegistrationKeys = keyof UserRegistration;
 

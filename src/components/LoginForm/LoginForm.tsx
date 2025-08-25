@@ -1,8 +1,8 @@
+import { useAppDispatch } from "@/app/redux";
+import { loginUser } from "@/pages/AuthPage/AuthSlice";
 import { Button, Form, Input } from "antd";
 import { Link } from "react-router";
-import { useAppDispatch } from "../../app/redux";
-import { loginUser } from "../../pages/AuthPage/AuthSlice";
-import type { AuthData } from "../../types/auth";
+import type { AuthData } from "@/types/auth";
 
 type FormInitialValuesKeys = keyof AuthData;
 

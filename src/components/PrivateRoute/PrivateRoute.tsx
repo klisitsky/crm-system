@@ -1,6 +1,6 @@
-import { useAppSelector } from "../../app/redux";
 import { Navigate } from "react-router";
-import { authSlice } from "../../pages/AuthPage/AuthSlice";
+import { useAppSelector } from "@/app/redux";
+import { authSlice } from "@/pages/AuthPage/AuthSlice";
 import type { FC, ReactNode } from "react";
 
 interface ProtectedRoutes {

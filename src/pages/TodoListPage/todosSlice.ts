@@ -6,7 +6,7 @@ import type { LoadingStatus } from "../../types/common";
 import type { FilterStatus, Todo, TodoId, TodoInfo } from "../../types/todos";
 import type { EntityState, PayloadAction } from "@reduxjs/toolkit/react";
 
-interface DomainModelTodoData {
+export interface DomainModelTodoData {
   todoId: TodoId;
   isDone?: boolean;
   title?: string;
@@ -55,11 +55,9 @@ export const todosSlice = createSlice({
     });
     builder.addCase(fetchTodos.fulfilled, (state, action) => {
       todosAdapter.setAll(state, action.payload.data);
-      state.todoInfo = action.payload.info ?? {
-        all: 0,
-        inWork: 0,
-        completed: 0,
-      };
+      if (action.payload.info) {
+        state.todoInfo = action.payload.info
+      }
       state.fetchTodosStatus = "succeed";
     });
     builder.addCase(fetchTodos.rejected, (state) => {
@@ -144,12 +142,11 @@ export const updateTodo = createAppAsyncThunk(
     try {
       dispatch(appSlice.actions.setError(""));
       const currentTodo = getState().todos.entities[arg.todoId];
-
-      await extra.todosApi.updateTodo(
-        arg.todoId,
-        arg.isDone ?? currentTodo.isDone,
-        arg.title ?? currentTodo.title
-      );
+      
+      await extra.todosApi.updateTodo(arg.todoId, {
+        isDone: arg.isDone ?? currentTodo.isDone,
+        title: arg.title ?? currentTodo.title,
+      });
       await dispatch(fetchTodos({}));
     } catch (err) {
       dispatch(appSlice.actions.setError(getErrorMessage(err)));

@@ -9,7 +9,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import type { LoadingStatus } from "../../types/common";
 import type { AuthData, Token, UserRegistration } from "../../types/auth";
 
-interface InitialAuthState {
+export interface InitialAuthState {
   accessToken: string;
   loginStatus: LoadingStatus;
   refreshTokenStatus: LoadingStatus;

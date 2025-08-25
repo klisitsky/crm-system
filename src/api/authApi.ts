@@ -1,5 +1,5 @@
+import type { AuthData, Profile, Token, UserRegistration } from "@/types/auth";
 import { instance } from "./instanceApi";
-import type { AuthData, Profile, Token, UserRegistration } from "../types/auth";
 
 export const authApi = {
   login: async (requestBody: AuthData) => {

@@ -1,10 +1,10 @@
 import { combineSlices, configureStore } from "@reduxjs/toolkit/react";
-import { todosApi } from "../api/todosApi";
-import { todosSlice } from "../pages/TodoListPage/todosSlice";
-import { authSlice } from "../pages/AuthPage/AuthSlice";
-import { authApi } from "../api/authApi";
 import { appSlice } from "./appSlice";
-import { setupAxiosInterceptors } from "../api/instanceApi";
+import { todosApi } from "@/api/todosApi";
+import { authApi } from "@/api/authApi";
+import { todosSlice } from "@/pages/TodoListPage/todosSlice";
+import { authSlice } from "@/pages/AuthPage/AuthSlice";
+import { setupAxiosInterceptors } from "@/api/instanceApi";
 
 
 export const extraArgument = {

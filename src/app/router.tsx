@@ -1,10 +1,10 @@
 import { createBrowserRouter, redirect } from "react-router";
-import { AuthPage } from "../pages/AuthPage/AuthPage.tsx";
-import { ProfilePage } from "../pages/ProfilePage/ProfilePage.tsx";
-import { TodoListPage } from "../pages/TodoListPage/todolistPage.tsx";
-import App from "./App.tsx";
-import { AppLayout } from "../components/Layout/Layout.tsx";
-import { PrivateRoute } from "../components/PrivateRoute/PrivateRoute.tsx";
+import App from "./App";
+import { PrivateRoute } from "@/components/PrivateRoute/PrivateRoute";
+import { AppLayout } from "@/components/Layout/Layout";
+import { TodoListPage } from "@/pages/TodoListPage/todolistPage";
+import { ProfilePage } from "@/pages/ProfilePage/ProfilePage";
+import { AuthPage } from "@/pages/AuthPage/AuthPage";
 
 export const router = createBrowserRouter([
   {
