@@ -1,8 +1,9 @@
+import { Card, Flex } from "antd";
 import { Navigate, useSearchParams } from "react-router";
-import { useAppSelector } from "../../app/redux";
-import { LoginForm } from "../../components/LoginForm/LoginForm";
-import { SignUpForm } from "../../components/SignUpForm/SignUpForm";
 import { authSlice } from "./AuthSlice";
+import { useAppSelector } from "@/app/redux";
+import { LoginForm } from "@/components/LoginForm/LoginForm";
+import { SignUpForm } from "@/components/SignUpForm/SignUpForm";
 
 export const AuthPage = () => {
   const [params] = useSearchParams();
@@ -13,5 +14,9 @@ export const AuthPage = () => {
     return <Navigate to="/" replace />;
   }
 
-  return isLogin ? <LoginForm /> : <SignUpForm />;
+  return (
+    <Flex justify="center" align="center" style={{height: "100vh"}}>
+      <Card style={{minWidth: "400px"}}>{isLogin ? <LoginForm /> : <SignUpForm />}</Card>
+    </Flex>
+  );  
 };

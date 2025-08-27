@@ -1,13 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { API_URL } from "../../api/instanceApi";
-import { createAppAsyncThunk } from "../../app/redux";
-import { getErrorMessage } from "../../utils/getErrorMessage";
-import { appSlice } from "../../app/appSlice";
-import { REFRESH_TOKEN } from "../../components/constants/localStorageValues";
+import { createAppAsyncThunk } from "@/app/redux";
+import { REFRESH_TOKEN } from "@/components/constants/localStorageValues";
+import { appSlice } from "@/app/appSlice";
+import { getErrorMessage } from "@/utils/getErrorMessage";
+import { API_URL } from "@/api/instanceApi";
+import type { LoadingStatus } from "@/types/common";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { LoadingStatus } from "../../types/common";
-import type { AuthData, Token, UserRegistration } from "../../types/auth";
+import type { AuthData, Token, UserRegistration } from "@/types/auth";
 
 export interface InitialAuthState {
   accessToken: string;

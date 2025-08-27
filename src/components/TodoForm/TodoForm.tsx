@@ -1,17 +1,15 @@
 import { Form } from "antd";
 import React, { memo } from "react";
-import Input from "antd/es/input/Input";
-import { MAX_SYMBOLS_COUNT, MIN_SYMBOLS_COUNT } from "../constants/todos";
-import type { InputProps } from "antd/es/input/Input";
+import type { ReactNode } from "react";
 
 interface TodoForm {
+  children: ReactNode;
   id: string;
-  initialValues?: Record<string, any>;
+  initialValues?: Record<string, string>;
   callback: (values: Record<string, string>) => void;
-  inputProps?: InputProps;
 }
 
-export const TodoForm: React.FC<TodoForm> = memo(({ id, initialValues, callback, inputProps }) => {
+export const TodoForm: React.FC<TodoForm> = memo(({ id, initialValues, callback, children }) => {
   const [form] = Form.useForm();
 
   const onFinish = (values: Record<"title", string>) => {
@@ -28,32 +26,7 @@ export const TodoForm: React.FC<TodoForm> = memo(({ id, initialValues, callback,
       onFinish={onFinish}
       style={{ flex: 1 }}
     >
-      <Form.Item
-        style={{ margin: 0, flex: 1 }}
-        name="title"
-        rules={[
-          {
-            required: true,
-            message: "Поле не может быть пустым",
-            transform: (value) => {
-              if (value) {
-                return value.trim();
-              }
-              return value;
-            },
-          },
-          {
-            min: MIN_SYMBOLS_COUNT,
-            message: "Длина менее 2 символов",
-          },
-          {
-            max: MAX_SYMBOLS_COUNT,
-            message: "Длина более 64 символов",
-          },
-        ]}
-      >
-        <Input {...inputProps} />
-      </Form.Item>
+      {children}
     </Form>
   );
 });

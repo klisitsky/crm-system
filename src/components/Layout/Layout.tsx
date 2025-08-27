@@ -1,6 +1,6 @@
 import Sider from "antd/es/layout/Sider";
 import Layout, { Content } from "antd/es/layout/layout";
-import { AppMenu } from "../AppMenu/AppMenu";
+import { AppMenu } from "@/components/AppMenu/AppMenu";
 import type { FC, ReactNode } from "react";
 
 interface AppLayout {

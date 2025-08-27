@@ -1,17 +1,14 @@
-import { LoadingOutlined } from "@ant-design/icons";
-import { Col, Flex, Row, Spin } from "antd";
-import { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../app/redux";
-import { AddTodoForm } from "../../components/AddTodoForm/AddTodoForm";
-import { TodosFilter } from "../../components/TodosFilter/TodosFilter";
-import { TodosList } from "../../components/TodosList/TodosList";
-import { fetchTodos, todosSlice } from "./todosSlice";
 import { TODOS_UPDATE_TIME } from "@/components/constants/todos";
-
+import { Col, Row } from "antd";
+import { useEffect } from "react";
+import { fetchTodos, todosSlice } from "./todosSlice";
+import { useAppDispatch, useAppSelector } from "@/app/redux";
+import { AddTodoForm } from "@/components/AddTodoForm/AddTodoForm";
+import { TodosFilter } from "@/components/TodosFilter/TodosFilter";
+import { TodosList } from "@/components/TodosList/TodosList";
 
 export const TodoListPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const isPending = useAppSelector(todosSlice.selectors.selectIsFetchTodosPending);
   const isUpdatingTodosMode = useAppSelector(todosSlice.selectors.selectUpdatingTodosMode);
   const filterStatus = useAppSelector(todosSlice.selectors.selectFilterStatus);
 
@@ -28,7 +25,7 @@ export const TodoListPage: React.FC = () => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [fetchTodos, isUpdatingTodosMode, filterStatus]);
+  }, [isUpdatingTodosMode, filterStatus, dispatch]);
 
   return (
     <>
@@ -44,15 +41,7 @@ export const TodoListPage: React.FC = () => {
       </Row>
       <Row>
         <Col span={8} offset={8}>
-          {isPending ? (
-            <Flex justify="center">
-              <Spin size="large" indicator={<LoadingOutlined spin />} />
-            </Flex>
-          ) : (
-            <>
-              <TodosList />
-            </>
-          )}
+          <TodosList />
         </Col>
       </Row>
     </>

@@ -1,10 +1,11 @@
 import { createEntityAdapter, createSelector, createSlice } from "@reduxjs/toolkit/react";
-import { createAppAsyncThunk } from "../../app/redux";
-import { getErrorMessage } from "../../utils/getErrorMessage";
-import { appSlice } from "../../app/appSlice";
-import type { LoadingStatus } from "../../types/common";
-import type { FilterStatus, Todo, TodoId, TodoInfo } from "../../types/todos";
+import { isEqualTwoArrays } from "@/utils/isEqualTwoArrays";
+import { createAppAsyncThunk } from "@/app/redux";
+import { getErrorMessage } from "@/utils/getErrorMessage";
+import { appSlice } from "@/app/appSlice";
 import type { EntityState, PayloadAction } from "@reduxjs/toolkit/react";
+import type { LoadingStatus } from "@/types/common";
+import type { FilterStatus, Todo, TodoId, TodoInfo } from "@/types/todos";
 
 export interface DomainModelTodoData {
   todoId: TodoId;
@@ -54,7 +55,9 @@ export const todosSlice = createSlice({
       state.fetchTodosStatus = "pending";
     });
     builder.addCase(fetchTodos.fulfilled, (state, action) => {
-      todosAdapter.setAll(state, action.payload.data);
+      if (!isEqualTwoArrays(state.ids.map(id => state.entities[id]), action.payload.data)) {
+        todosAdapter.setAll(state, action.payload.data);
+      }
       if (action.payload.info) {
         state.todoInfo = action.payload.info
       }
