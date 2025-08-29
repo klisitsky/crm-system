@@ -1,19 +1,27 @@
-import { useAppDispatch } from "@/app/redux";
-import { loginUser } from "@/pages/AuthPage/AuthSlice";
-import { Button, Divider, Flex, Form, Input } from "antd";
-import { Link } from "react-router";
+import { useAppDispatch, useAppSelector } from "@/app/redux";
 import { TodoForm } from "@/components/TodoForm/TodoForm";
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import Title from "antd/es/typography/Title";
+import { authSlice, loginUser } from "@/pages/AuthPage/AuthSlice";
 import type { AuthData } from "@/types/auth";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { Alert, Button, Divider, Flex, Form, Input } from "antd";
+import Title from "antd/es/typography/Title";
+import { useCallback } from "react";
+import { Link } from "react-router";
 
 type FormInitialValuesKeys = keyof AuthData;
 
 export const LoginForm = () => {
   const dispatch = useAppDispatch();
-  const handleLogin = (formValues: Record<FormInitialValuesKeys, string>) => {
-    dispatch(loginUser(formValues));
-  };
+
+  const loginError = useAppSelector(authSlice.selectors.selectLoginError);
+  const isPending = useAppSelector(authSlice.selectors.selectIsLoginStatusPending);
+
+  const handleLogin = useCallback(
+    async (formValues: Record<FormInitialValuesKeys, string>) => {
+      await dispatch(loginUser(formValues)).unwrap();
+    },
+    [dispatch]
+  );
 
   return (
     <>
@@ -22,7 +30,8 @@ export const LoginForm = () => {
           Вход
         </Title>
       </Flex>
-      <TodoForm id="loginForm" callback={handleLogin}>
+      {loginError && <Alert message={loginError} type="error" style={{ marginBottom: "15px" }} />}
+      <TodoForm id="loginForm" callback={handleLogin} disabled={isPending}>
         <Form.Item name="login" label="Логин" layout="vertical">
           <Input prefix={<UserOutlined />} placeholder="Username" />
         </Form.Item>
@@ -30,7 +39,7 @@ export const LoginForm = () => {
           <Input.Password prefix={<LockOutlined />} placeholder="Password" />
         </Form.Item>
       </TodoForm>
-      <Button form="loginForm" htmlType="submit" type="primary" block>
+      <Button form="loginForm" htmlType="submit" type="primary" disabled={isPending} block>
         Войти
       </Button>
       <Divider />

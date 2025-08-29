@@ -1,5 +1,3 @@
-type Role = "ADMIN" | "USER" | "MODERATOR";
-
 export interface UserRegistration {
   login: string;
   username: string;
@@ -15,22 +13,6 @@ export interface AuthData {
 
 export interface RefreshToken {
   refreshToken: string;
-}
-
-export interface Profile {
-  id: number;
-  username: string;
-  email: string;
-  date: string;
-  isBlocked: boolean;
-  roles: Role[];
-  phoneNumber: string;
-}
-
-interface ProfileRequest {
-  username: string;
-  email: string;
-  phoneNumber: string;
 }
 
 interface PasswordRequest {

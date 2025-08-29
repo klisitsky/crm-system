@@ -1,17 +1,19 @@
 import { Card, Flex } from "antd";
-import { Navigate, useSearchParams } from "react-router";
+import { Navigate, useLocation, useSearchParams } from "react-router";
 import { authSlice } from "./AuthSlice";
 import { useAppSelector } from "@/app/redux";
 import { LoginForm } from "@/components/LoginForm/LoginForm";
 import { SignUpForm } from "@/components/SignUpForm/SignUpForm";
+import { getPathFrom } from "@/utils/getPathFrom";
 
 export const AuthPage = () => {
   const [params] = useSearchParams();
-  const isLogin = params.get("mode") === "login";
+  const isLogin = (params.get("mode") ?? "login") === "login";
+  const location = useLocation();
 
   const accessToken = useAppSelector(authSlice.selectors.selectAccessToken);
   if (accessToken) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={getPathFrom(location)} replace />;
   }
 
   return (

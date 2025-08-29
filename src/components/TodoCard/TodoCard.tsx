@@ -5,7 +5,7 @@ import SaveFilled from "@ant-design/icons/lib/icons/SaveFilled";
 import { Button, Flex, Form, Input, Typography } from "antd";
 import Card from "antd/es/card/Card";
 import Checkbox from "antd/es/checkbox/Checkbox";
-import React, { memo, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/redux";
 import { deleteTodo, todosSlice, updateTodo } from "@/pages/TodoListPage/todosSlice";
 import { TodoForm } from "@/components/TodoForm/TodoForm";
@@ -30,9 +30,12 @@ export const TodoCard: React.FC<TodoCard> = memo(({ todo }) => {
     dispatch(updateTodo({ todoId: todo.id, isDone: !todo.isDone }));
   };
 
-  const handleUpdateTodoTitle = (values: Record<"title", string>) => {
-    dispatch(updateTodo({ todoId: todo.id, title: values.title }));
-  };
+  const handleUpdateTodoTitle = useCallback(
+    async (values: Record<"title", string>) => {
+      await dispatch(updateTodo({ todoId: todo.id, title: values.title })).unwrap();
+    },
+    [dispatch, todo.id]
+  );
 
   const handleDeleteTodo = () => {
     dispatch(deleteTodo(todo.id));

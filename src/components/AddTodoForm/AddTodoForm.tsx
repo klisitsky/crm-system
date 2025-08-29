@@ -11,8 +11,8 @@ export const AddTodoForm: React.FC = memo(() => {
   const isCreateTodoPending = useAppSelector(todosSlice.selectors.selectIsCreateTodoPending);
   const isPending = isFetchTodosPending && isCreateTodoPending;
 
-  const handleCreateTodo = useCallback((values: Record<string, string>) => {
-    dispatch(createTodo(values.title));
+  const handleCreateTodo = useCallback(async (values: Record<string, string>) => {
+    await dispatch(createTodo(values.title)).unwrap();
   }, [dispatch]);
 
   return (

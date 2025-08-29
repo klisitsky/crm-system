@@ -5,18 +5,21 @@ import { AppLayout } from "@/components/Layout/Layout";
 import { TodoListPage } from "@/pages/TodoListPage/todolistPage";
 import { ProfilePage } from "@/pages/ProfilePage/ProfilePage";
 import { AuthPage } from "@/pages/AuthPage/AuthPage";
+import { ErrorPage } from "@/pages/ErrorPage/ErrorPage";
+import { AUTH_PATH, PROFILE_PATH, TODOS_PATH } from "@/components/constants/paths";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    errorElement: <ErrorPage/>,
     children: [
       {
         index: true,
-        loader: () => redirect("/todos"),
+        loader: () => redirect(TODOS_PATH),
       },
       {
-        path: "todos",
+        path: TODOS_PATH,
         element: (
           <PrivateRoute>
             <AppLayout>
@@ -26,7 +29,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "profile",
+        path: PROFILE_PATH,
         element: (
           <PrivateRoute>
             <AppLayout>
@@ -36,15 +39,8 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "auth",
-        element: <AuthPage />,
-        loader: ({ request }) => {
-          const url = new URL(request.url);
-
-          if (!url.searchParams.get("mode")) {
-            return redirect("?mode=login");
-          }
-        },
+        path: AUTH_PATH,
+        element: <AuthPage />
       },
     ],
   },

@@ -21,13 +21,13 @@ function App() {
     if (localStorage.getItem(REFRESH_TOKEN)) {
       dispatch(checkAuth());
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (appError) {
       api["error"]({ message: appError, placement: "bottomLeft" });
     }
-  }, [appError]);
+  }, [appError, api]);
 
   return isPending ? (
     <Flex justify="center">

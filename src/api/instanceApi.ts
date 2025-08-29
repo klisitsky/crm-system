@@ -1,9 +1,9 @@
 import { REFRESH_TOKEN } from "@/components/constants/localStorageValues";
 import { authSlice } from "@/pages/AuthPage/AuthSlice";
 import axios, { AxiosError } from "axios";
+import type { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import type { AppDispatch, RootState } from "@/app/redux";
 import type { Token } from "@/types/auth";
-import type { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 
 interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
   _isRetry?: boolean;
@@ -35,8 +35,11 @@ export const setupAxiosInterceptors = (dispatch: AppDispatch, getState: () => Ro
           dispatch(authSlice.actions.setAccessToken(res.data.accessToken));
 
           return instance.request(originalRequest);
-        } catch (err) {}
+        } catch (err) {
+          localStorage.removeItem(REFRESH_TOKEN);
+        }
       }
+      localStorage.removeItem(REFRESH_TOKEN);
       throw error;
     }
   );

@@ -5,28 +5,33 @@ import type { ReactNode } from "react";
 interface TodoForm {
   children: ReactNode;
   id: string;
+  callback: (values: Record<string, string>) => Promise<void>;
   initialValues?: Record<string, string>;
-  callback: (values: Record<string, string>) => void;
+  disabled?: boolean;
 }
 
-export const TodoForm: React.FC<TodoForm> = memo(({ id, initialValues, callback, children }) => {
-  const [form] = Form.useForm();
+export const TodoForm: React.FC<TodoForm> = memo(
+  ({ id, initialValues, callback, children, disabled }) => {
+    const [form] = Form.useForm();
 
-  const onFinish = (values: Record<"title", string>) => {
-    callback(values);
-    form.resetFields();
-  };
+    const onFinish = (values: Record<"title", string>) => {
+      callback(values).then(() => {
+        form.resetFields();
+      });
+    };
 
-  return (
-    <Form
-      id={id}
-      initialValues={initialValues}
-      form={form}
-      validateTrigger="none"
-      onFinish={onFinish}
-      style={{ flex: 1 }}
-    >
-      {children}
-    </Form>
-  );
-});
+    return (
+      <Form
+        id={id}
+        initialValues={initialValues}
+        form={form}
+        validateTrigger="none"
+        onFinish={onFinish}
+        style={{ flex: 1 }}
+        disabled={disabled}
+      >
+        {children}
+      </Form>
+    );
+  }
+);

@@ -1,11 +1,12 @@
 import { useAppDispatch, useAppSelector } from "@/app/redux";
 import { authSlice, signUpUser } from "@/pages/AuthPage/AuthSlice";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { Button, Divider, Flex, Form, Input, Result } from "antd";
-import { useEffect, useState } from "react";
+import { Alert, Button, Divider, Flex, Form, Input, Result } from "antd";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { TodoForm } from "@/components/TodoForm/TodoForm";
 import Title from "antd/es/typography/Title";
+import { AUTH_PATH } from "@/components/constants/paths";
 import type { UserRegistration } from "@/types/auth";
 
 export type UserRegistrationKeys = keyof UserRegistration;
@@ -15,7 +16,10 @@ export const SignUpForm = () => {
   const navigate = useNavigate();
 
   const isNewUserCreated = useAppSelector(authSlice.selectors.selectIsNewUserCreated);
-  const [timer, setTimer] = useState<number>(5);
+  const [timer, setTimer] = useState<number>(10);
+
+  const signUpError = useAppSelector(authSlice.selectors.selectSignUpError);
+  const isPending = useAppSelector(authSlice.selectors.selectIsSignUpStatusPending);
 
   useEffect(() => {
     let intervalId: number;
@@ -26,7 +30,7 @@ export const SignUpForm = () => {
     }
 
     if (timer === 0) {
-      navigate("/auth", { replace: true });
+      navigate(AUTH_PATH, { replace: true });
     }
 
     return () => {
@@ -37,15 +41,18 @@ export const SignUpForm = () => {
     };
   }, [timer, isNewUserCreated, dispatch, navigate]);
 
-  const handleSignUpUser = ({
-    confirmPassword,
-    ...restFormValues
-  }: Record<UserRegistrationKeys | "confirmPassword", string>) => {
-    dispatch(signUpUser(restFormValues));
-  };
+  const handleSignUpUser = useCallback(
+    async ({
+      confirmPassword,
+      ...restFormValues
+    }: Record<UserRegistrationKeys | "confirmPassword", string>) => {
+      await dispatch(signUpUser(restFormValues)).unwrap();
+    },
+    [dispatch]
+  );
 
   const handleRedirectToLogin = () => {
-    navigate("/auth", { replace: true });
+    navigate(AUTH_PATH, { replace: true });
   };
 
   return isNewUserCreated ? (
@@ -62,9 +69,12 @@ export const SignUpForm = () => {
   ) : (
     <>
       <Flex justify="center">
-        <Title level={2} style={{margin: "0 0 15px"}}>Регистрация</Title>
+        <Title level={2} style={{ margin: "0 0 15px" }}>
+          Регистрация
+        </Title>
       </Flex>
-      <TodoForm id="signUpForm" callback={handleSignUpUser}>
+      {signUpError && <Alert message={signUpError} type="error" style={{ marginBottom: "15px" }} />}
+      <TodoForm id="signUpForm" callback={handleSignUpUser} disabled={isPending}>
         <Form.Item
           name="username"
           label="Имя пользователя"
@@ -228,7 +238,7 @@ export const SignUpForm = () => {
           />
         </Form.Item>
       </TodoForm>
-      <Button form="signUpForm" htmlType="submit" type="primary" block>
+      <Button form="signUpForm" htmlType="submit" type="primary" disabled={isPending} block>
         Зарегистрироваться
       </Button>
       <Divider />
