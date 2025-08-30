@@ -1,8 +1,9 @@
+import ProfileOutlined from "@ant-design/icons/lib/icons/ProfileOutlined";
 import UnorderedListOutlined from "@ant-design/icons/lib/icons/UnorderedListOutlined";
-import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
+import UsergroupAddOutlined from "@ant-design/icons/lib/icons/UsergroupAddOutlined";
+import { PROFILE_PATH, TODOS_PATH, USERS_PATH } from "@/components/constants/paths";
 import Menu from "antd/es/menu/menu";
 import { NavLink, useLocation } from "react-router";
-import { PROFILE_PATH, TODOS_PATH } from "@/components/constants/paths";
 import type { MenuProps } from "antd";
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -18,8 +19,13 @@ export const AppMenu = () => {
     },
     {
       key: PROFILE_PATH,
-      icon: <UserOutlined />,
+      icon: <ProfileOutlined />,
       label: <NavLink to={PROFILE_PATH}>Профиль</NavLink>,
+    },
+    {
+      key: USERS_PATH,
+      icon: <UsergroupAddOutlined />,
+      label: <NavLink to={USERS_PATH}>Пользователи</NavLink>,
     },
   ];
 

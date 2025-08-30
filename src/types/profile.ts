@@ -1,4 +1,4 @@
-type Role = "ADMIN" | "USER" | "MODERATOR";
+import type { Role } from "./common";
 
 export interface Profile {
   id: number;

@@ -1,0 +1,5 @@
+export const formatDate = (value: string) => {
+  const date = new Date(value);
+
+  return date.toLocaleDateString("ru-RU");
+};

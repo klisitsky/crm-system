@@ -35,11 +35,8 @@ export const setupAxiosInterceptors = (dispatch: AppDispatch, getState: () => Ro
           dispatch(authSlice.actions.setAccessToken(res.data.accessToken));
 
           return instance.request(originalRequest);
-        } catch (err) {
-          localStorage.removeItem(REFRESH_TOKEN);
-        }
+        } catch (err) {}
       }
-      localStorage.removeItem(REFRESH_TOKEN);
       throw error;
     }
   );

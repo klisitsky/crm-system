@@ -7,12 +7,15 @@ import { authSlice } from "@/pages/AuthPage/AuthSlice";
 import { setupAxiosInterceptors } from "@/api/instanceApi";
 import { profileApi } from "@/api/profileApi";
 import { profileSlice } from "@/pages/ProfilePage/profileSlice";
+import { usersApi } from "@/api/usersApi";
+import { usersSlice } from "@/pages/UsersPage/usersSlice";
 
 
 export const extraArgument = {
   todosApi,
   authApi,
   profileApi,
+  usersApi
 };
 
 const rootReducer = combineSlices({
@@ -20,6 +23,7 @@ const rootReducer = combineSlices({
   [authSlice.name]: authSlice.reducer,
   [profileSlice.name]: profileSlice.reducer,
   [todosSlice.name]: todosSlice.reducer,
+  [usersSlice.name]: usersSlice.reducer,
 });
 
 export const store = configureStore({

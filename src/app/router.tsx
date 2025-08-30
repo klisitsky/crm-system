@@ -6,7 +6,8 @@ import { TodoListPage } from "@/pages/TodoListPage/todolistPage";
 import { ProfilePage } from "@/pages/ProfilePage/ProfilePage";
 import { AuthPage } from "@/pages/AuthPage/AuthPage";
 import { ErrorPage } from "@/pages/ErrorPage/ErrorPage";
-import { AUTH_PATH, PROFILE_PATH, TODOS_PATH } from "@/components/constants/paths";
+import { AUTH_PATH, PROFILE_PATH, TODOS_PATH, USERS_PATH } from "@/components/constants/paths";
+import { UsersPage } from "@/pages/UsersPage/UsersPage";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +35,16 @@ export const router = createBrowserRouter([
           <PrivateRoute>
             <AppLayout>
               <ProfilePage />
+            </AppLayout>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: USERS_PATH,
+        element: (
+          <PrivateRoute>
+            <AppLayout>
+              <UsersPage />
             </AppLayout>
           </PrivateRoute>
         ),
