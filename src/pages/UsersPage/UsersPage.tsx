@@ -1,10 +1,8 @@
 import { useAppDispatch, useAppSelector } from "@/app/redux";
-import type { Roles, User } from "@/types/users";
 import { formatDate } from "@/utils/formatDate";
 import { CheckOutlined, CloseOutlined, DeleteFilled, UserOutlined } from "@ant-design/icons";
-import type { CheckboxOptionType, TableProps } from "antd";
 import { Button, Card, Checkbox, Flex, Space, Switch, Table, Tag, Typography } from "antd";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   deleteUser,
   fetchUsers,
@@ -12,6 +10,9 @@ import {
   updateUserRights,
   usersSlice,
 } from "./usersSlice";
+import type { Roles, User } from "@/types/users";
+import type { CheckboxOptionType, TableProps } from "antd";
+import type { ReactNode } from "react";
 
 interface UserWithKey extends User {
   key: React.Key;
@@ -19,8 +20,8 @@ interface UserWithKey extends User {
 type ColumnTypes = Exclude<TableProps<UserWithKey>["columns"], undefined>;
 
 interface CustomizeCellComponents {
-  EditForm: (props: CellProps) => ReactNode;
   ViewCell: (props: CellProps) => ReactNode;
+  EditorCell: (props: CellProps) => ReactNode;
 }
 
 type ExtraColumnPropsMap = Record<string, CustomizeCellComponents>;
@@ -43,7 +44,7 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
   children,
   dataIndex,
   record,
-  EditForm,
+  EditorCell,
   ViewCell,
   ...restProps
 }) => {
@@ -54,7 +55,7 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
     const { key, ...restRecordProps } = record;
 
     childNode = editMode ? (
-      <EditForm key={key} toggleEditMode={() => setEditMode(false)} record={restRecordProps} />
+      <EditorCell key={key} toggleEditMode={() => setEditMode(false)} record={restRecordProps} />
     ) : (
       <ViewCell key={key} toggleEditMode={() => setEditMode(true)} record={restRecordProps} />
     );
@@ -147,12 +148,12 @@ export const UsersPage = () => {
 
     const extraColumnPropsMap: ExtraColumnPropsMap = {
       roles: {
-        EditForm: RolesEditForm,
         ViewCell: RolesViewCell,
+        EditorCell: RolesEditForm,
       },
       isBlocked: {
-        EditForm: IsBlockedEditForm,
         ViewCell: IsBlockedViewCell,
+        EditorCell: IsBlockedEditForm,
       },
     };
 
@@ -163,8 +164,8 @@ export const UsersPage = () => {
         editable: col.editable,
         dataIndex: col.dataIndex,
         title: col.title,
-        EditForm: extraColumnPropsMap[col.dataIndex].EditForm,
         ViewCell: extraColumnPropsMap[col.dataIndex].ViewCell,
+        EditorCell: extraColumnPropsMap[col.dataIndex].EditorCell,
       }),
     };
   });
@@ -273,7 +274,7 @@ const RolesEditForm = ({ record, toggleEditMode }: CellProps) => {
         />
         <Button
           size="small"
-          variant="outlined" 
+          variant="outlined"
           color="blue"
           icon={<CloseOutlined />}
           disabled={roles.length === 0 || isPending}
