@@ -5,12 +5,13 @@ import { REFRESH_TOKEN } from "@/components/constants/localStorageValues";
 import { appSlice } from "@/app/appSlice";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 import { API_URL } from "@/api/instanceApi";
+import { authApi } from "@/api/authApi";
 import type { LoadingStatus } from "@/types/common";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { AuthData, Token, UserRegistration } from "@/types/auth";
-import { authApi } from "@/api/authApi";
 
 export interface InitialAuthState {
+  isAuthorization: boolean;
   accessToken: string;
   loginStatus: LoadingStatus;
   signUpStatus: LoadingStatus;
@@ -22,6 +23,7 @@ export interface InitialAuthState {
 }
 
 const initialAuthState: InitialAuthState = {
+  isAuthorization: false,
   accessToken: "",
   loginStatus: "idle",
   signUpStatus: "idle",
@@ -56,6 +58,7 @@ export const authSlice = createSlice({
     builder.addCase(loginUser.fulfilled, (state, action) => {
       state.loginStatus = "succeed";
       state.accessToken = action.payload;
+      state.isAuthorization = true;
     });
     builder.addCase(loginUser.rejected, (state) => {
       state.loginStatus = "failed";
@@ -66,9 +69,12 @@ export const authSlice = createSlice({
     builder.addCase(checkAuth.fulfilled, (state, action) => {
       state.refreshTokenStatus = "succeed";
       state.accessToken = action.payload;
+      state.isAuthorization = true;
     });
     builder.addCase(checkAuth.rejected, (state) => {
       state.refreshTokenStatus = "failed";
+      state.accessToken = "";
+      state.isAuthorization = false;
     });
     builder.addCase(signUpUser.pending, (state) => {
       state.signUpStatus = "pending";
@@ -83,6 +89,7 @@ export const authSlice = createSlice({
     builder.addCase(logOutUser.fulfilled, (state) => {
       state.signUpStatus = "succeed";
       state.accessToken = "";
+      state.isAuthorization = false;
     });
     builder.addCase(logOutUser.pending, (state) => {
       state.signUpStatus = "pending";
@@ -92,7 +99,7 @@ export const authSlice = createSlice({
     });
   },
   selectors: {
-    selectAccessToken: (state) => state.accessToken,
+    selectIsAuthorization: (state) => state.isAuthorization,
     selectIsLoginStatusPending: (state) => state.loginStatus === "pending",
     selectIsSignUpStatusPending: (state) => state.signUpStatus === "pending",
     selectIsRefreshTokenStatusPending: (state) => state.refreshTokenStatus === "pending",

@@ -9,10 +9,10 @@ interface ProtectedRoutes {
 }
 
 export const PrivateRoute: FC<ProtectedRoutes> = ({ children }) => {
-  const accessToken = useAppSelector(authSlice.selectors.selectAccessToken);
+  const isAuthorization = useAppSelector(authSlice.selectors.selectIsAuthorization);
   const location = useLocation();
   
-  if (!accessToken) {
+  if (!isAuthorization) {
     return <Navigate to={`${AUTH_PATH}?mode=login`} state={{ from: location }} replace/>;
   } else {
     return children;
