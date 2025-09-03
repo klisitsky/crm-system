@@ -1,25 +1,37 @@
-import { useAppSelector } from "@/app/redux";
-import { todosSlice } from "@/pages/TodoListPage/todosSlice";
+import { TodoCard } from "@/components/TodoCard/TodoCard";
 import { List, Typography } from "antd";
 import { memo } from "react";
-import { TodoCard } from "@/components/TodoCard/TodoCard";
+import type { Todo } from "@/types/todos";
 
-export const TodosList: React.FC = memo(() => {
-  const todosData = useAppSelector(todosSlice.selectors.selectTodosData);
+interface TodosList {
+  todosData: Todo[];
+  isLoading: boolean;
+  onUpdate?: () => Promise<void>;
+  updateMode?: (mode: boolean) => void;
+}
 
-  return todosData.length ? (
-    <List
-      split={false}
-      dataSource={todosData}
-      renderItem={(todo) => (
-        <List.Item style={{ padding: 0, margin: "15px 0" }}>
-          <TodoCard todo={todo} key={todo.id}></TodoCard>
-        </List.Item>
-      )}
-    />
-  ) : (
-    <Typography.Title level={4} type="secondary">
-      Список задач пуст
-    </Typography.Title>
-  );
-});
+export const TodosList: React.FC<TodosList> = memo(
+  ({ todosData, isLoading, onUpdate, updateMode }) => {
+    return todosData.length ? (
+      <List
+        split={false}
+        dataSource={todosData}
+        renderItem={(todo) => (
+          <List.Item style={{ padding: 0, margin: "15px 0" }}>
+            <TodoCard
+              key={todo.id}
+              todo={todo}
+              isLoading={isLoading}
+              onUpdate={onUpdate}
+              updateMode={updateMode}
+            />
+          </List.Item>
+        )}
+      />
+    ) : (
+      <Typography.Title level={4} type="secondary">
+        Список задач пуст
+      </Typography.Title>
+    );
+  }
+);

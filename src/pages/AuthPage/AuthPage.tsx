@@ -11,8 +11,8 @@ export const AuthPage = () => {
   const isLogin = (params.get("mode") ?? "login") === "login";
   const location = useLocation();
 
-  const accessToken = useAppSelector(authSlice.selectors.selectAccessToken);
-  if (accessToken) {
+  const isAuthorization = useAppSelector(authSlice.selectors.selectIsAuthorization);
+  if (isAuthorization) {
     return <Navigate to={getPathFrom(location)} replace />;
   }
 

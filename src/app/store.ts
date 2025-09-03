@@ -1,8 +1,6 @@
 import { combineSlices, configureStore } from "@reduxjs/toolkit/react";
 import { appSlice } from "./appSlice";
-import { todosApi } from "@/api/todosApi";
 import { authApi } from "@/api/authApi";
-import { todosSlice } from "@/pages/TodoListPage/todosSlice";
 import { authSlice } from "@/pages/AuthPage/AuthSlice";
 import { setupAxiosInterceptors } from "@/api/instanceApi";
 import { profileApi } from "@/api/profileApi";
@@ -12,7 +10,6 @@ import { usersSlice } from "@/pages/UsersPage/usersSlice";
 
 
 export const extraArgument = {
-  todosApi,
   authApi,
   profileApi,
   usersApi
@@ -22,7 +19,6 @@ const rootReducer = combineSlices({
   [appSlice.name]: appSlice.reducer,
   [authSlice.name]: authSlice.reducer,
   [profileSlice.name]: profileSlice.reducer,
-  [todosSlice.name]: todosSlice.reducer,
   [usersSlice.name]: usersSlice.reducer,
 });
 
