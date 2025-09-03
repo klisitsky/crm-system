@@ -50,22 +50,19 @@ export const TodoListPage: React.FC = () => {
       setAppError(() => getErrorMessage(err));
       setLoadingStatus(() => "failed");
     }
-  }, [todosData, filterStatus]);
+  }, [filterStatus]);
 
   useEffect(() => {
     if (!isUpdateMode) {
       return;
     }
-    console.log('ff')
-    const intervalId = setInterval(() => {
-      fetchTodosByFilter();
-    }, TODOS_UPDATE_TIME);
+    const intervalId = setInterval(fetchTodosByFilter, TODOS_UPDATE_TIME);
     fetchTodosByFilter();
 
     return () => {
       clearInterval(intervalId);
     };
-  }, [fetchTodosByFilter, filterStatus, isUpdateMode, todosData]);
+  }, [fetchTodosByFilter, isUpdateMode]);
 
   return (
     <>

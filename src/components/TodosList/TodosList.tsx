@@ -12,7 +12,6 @@ interface TodosList {
 
 export const TodosList: React.FC<TodosList> = memo(
   ({ todosData, isLoading, onUpdate, updateMode }) => {
-    
     return todosData.length ? (
       <List
         split={false}
@@ -25,7 +24,7 @@ export const TodosList: React.FC<TodosList> = memo(
               isLoading={isLoading}
               onUpdate={onUpdate}
               updateMode={updateMode}
-            ></TodoCard>
+            />
           </List.Item>
         )}
       />
