@@ -2,59 +2,82 @@ import CloseCircleOutlined from "@ant-design/icons/lib/icons/CloseCircleOutlined
 import DeleteFilled from "@ant-design/icons/lib/icons/DeleteFilled";
 import EditFilled from "@ant-design/icons/lib/icons/EditFilled";
 import SaveFilled from "@ant-design/icons/lib/icons/SaveFilled";
-import { Button, Flex, Form, Input, Typography } from "antd";
 import Card from "antd/es/card/Card";
 import Checkbox from "antd/es/checkbox/Checkbox";
-import React, { memo, useCallback, useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/app/redux";
-import { deleteTodo, todosSlice, updateTodo } from "@/pages/TodoListPage/todosSlice";
-import { TodoForm } from "@/components/TodoForm/TodoForm";
-import s from "./TodoCard.module.scss";
+import { todosApi } from "@/api/todosApi";
 import { MAX_TODOS_SYMBOLS_COUNT, MIN_TODOS_SYMBOLS_COUNT } from "@/components/constants/todos";
+import { TodoForm } from "@/components/TodoForm/TodoForm";
+import { Button, Flex, Form, Input, Typography } from "antd";
+import React, { memo, useCallback, useState } from "react";
+import s from "./TodoCard.module.scss";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 import type { Todo } from "@/types/todos";
 
 interface TodoCard {
   todo: Todo;
+  isLoading: boolean;
+  onUpdate?: () => void;
+  updateMode?: (mode: boolean) => void;
 }
 
-export const TodoCard: React.FC<TodoCard> = memo(({ todo }) => {
-  const dispatch = useAppDispatch();
+export const TodoCard: React.FC<TodoCard> = memo(({ todo, isLoading, onUpdate, updateMode }) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
 
-  const isFetchTodosPending = useAppSelector(todosSlice.selectors.selectIsFetchTodosPending);
-  const isDeleteTodoPending = useAppSelector(todosSlice.selectors.selectIsDeleteTodoPending);
-  const isCreateTodoPending = useAppSelector(todosSlice.selectors.selectIsCreateTodoPending);
-  const isPending = isFetchTodosPending || isDeleteTodoPending || isCreateTodoPending;
-
-  const handleUpdateTodoStatus = () => {
-    dispatch(updateTodo({ todoId: todo.id, isDone: !todo.isDone }));
+  const handleUpdateTodoStatus = async () => {
+    try {
+      await todosApi.updateTodo(todo.id, { isDone: !todo.isDone });
+      if (onUpdate) {
+        onUpdate();
+      }
+    } catch (err) {
+      alert(getErrorMessage(err));
+    }
   };
 
   const handleUpdateTodoTitle = useCallback(
     async (values: Record<"title", string>) => {
-      await dispatch(updateTodo({ todoId: todo.id, title: values.title })).unwrap();
+      try {
+        await todosApi.updateTodo(todo.id, { title: values.title });
+        if (updateMode) {
+          updateMode(true);
+        }
+      } catch (err) {
+        alert(getErrorMessage(err));
+      }
+      setIsEdit(false);
     },
-    [dispatch, todo.id]
+    [todo.id, updateMode]
   );
 
-  const handleDeleteTodo = () => {
-    dispatch(deleteTodo(todo.id));
+  const handleDeleteTodo = async () => {
+    try {
+      await todosApi.deleteTodo(todo.id);
+      if (onUpdate) {
+        onUpdate();
+      }
+    } catch (err) {
+      alert(getErrorMessage(err));
+    }
   };
 
   const startEdit = () => {
     setIsEdit(true);
-    dispatch(todosSlice.actions.toggleUpdatingTodosMode(false));
+    if (updateMode) {
+      updateMode(false);
+    }
   };
 
   const endEdit = () => {
     setIsEdit(false);
-    dispatch(todosSlice.actions.toggleUpdatingTodosMode(true));
+    if (updateMode) {
+      updateMode(true);
+    }
   };
 
   return (
     <Card size="small" style={{ width: "100%" }}>
       <Flex gap="small" align="center" justify="space-between">
-        <Checkbox checked={todo.isDone} disabled={isPending} onChange={handleUpdateTodoStatus} />
+        <Checkbox checked={todo.isDone} disabled={isLoading} onChange={handleUpdateTodoStatus} />
         {isEdit ? (
           <TodoForm
             id="editForm"
@@ -86,7 +109,7 @@ export const TodoCard: React.FC<TodoCard> = memo(({ todo }) => {
               ]}
             >
               <Input
-                disabled={isPending}
+                disabled={isLoading}
                 variant="underlined"
                 size="small"
                 style={{ backgroundColor: "transparent" }}
@@ -106,7 +129,7 @@ export const TodoCard: React.FC<TodoCard> = memo(({ todo }) => {
             <Button
               form="editForm"
               type="primary"
-              disabled={isPending}
+              disabled={isLoading}
               size="middle"
               icon={<SaveFilled key="save" />}
               htmlType="submit"
@@ -116,7 +139,7 @@ export const TodoCard: React.FC<TodoCard> = memo(({ todo }) => {
               color="blue"
               variant="outlined"
               onClick={endEdit}
-              disabled={isPending}
+              disabled={isLoading}
               size="middle"
               htmlType="reset"
               icon={<CloseCircleOutlined key="close" />}
@@ -126,7 +149,7 @@ export const TodoCard: React.FC<TodoCard> = memo(({ todo }) => {
           <Button
             type="primary"
             onClick={startEdit}
-            disabled={isPending}
+            disabled={isLoading}
             size="middle"
             icon={<EditFilled key="edit" />}
           />
@@ -135,7 +158,7 @@ export const TodoCard: React.FC<TodoCard> = memo(({ todo }) => {
           color="danger"
           variant="solid"
           onClick={handleDeleteTodo}
-          disabled={isPending}
+          disabled={isLoading}
           size="middle"
           icon={<DeleteFilled key="delete" />}
         />
