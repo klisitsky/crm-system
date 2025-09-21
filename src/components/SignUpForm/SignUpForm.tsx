@@ -1,12 +1,13 @@
-import { useAppDispatch, useAppSelector } from "@/app/redux";
+import Title from "antd/es/typography/Title";
+import { TodoForm } from "@/components/TodoForm/TodoForm";
+import { AUTH_PATH } from "@/components/constants/paths";
 import { authSlice, signUpUser } from "@/pages/AuthPage/AuthSlice";
+import { selectAuthRequestData } from "@/store/selectors.ts/authSelectors";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Alert, Button, Divider, Flex, Form, Input, Result } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { TodoForm } from "@/components/TodoForm/TodoForm";
-import Title from "antd/es/typography/Title";
-import { AUTH_PATH } from "@/components/constants/paths";
+import { useAppDispatch, useAppSelector } from "../../store/redux";
 import type { UserRegistration } from "@/types/auth";
 
 export type UserRegistrationKeys = keyof UserRegistration;
@@ -15,15 +16,12 @@ export const SignUpForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const isNewUserCreated = useAppSelector(authSlice.selectors.selectIsNewUserCreated);
+  const { data, status } = useAppSelector(selectAuthRequestData);
   const [timer, setTimer] = useState<number>(10);
-
-  const signUpError = useAppSelector(authSlice.selectors.selectSignUpError);
-  const isPending = useAppSelector(authSlice.selectors.selectIsSignUpStatusPending);
 
   useEffect(() => {
     let intervalId: number;
-    if (isNewUserCreated) {
+    if (data?.isNewUserCreated) {
       intervalId = setInterval(() => {
         setTimer((prev) => prev - 1);
       }, 1000);
@@ -39,7 +37,7 @@ export const SignUpForm = () => {
       }
       clearInterval(intervalId);
     };
-  }, [timer, isNewUserCreated, dispatch, navigate]);
+  }, [timer, data, dispatch, navigate]);
 
   const handleSignUpUser = useCallback(
     async ({
@@ -55,7 +53,7 @@ export const SignUpForm = () => {
     navigate(AUTH_PATH, { replace: true });
   };
 
-  return isNewUserCreated ? (
+  return data?.isNewUserCreated ? (
     <Result
       status="success"
       title="Ваша учетная запись успешно создана"
@@ -73,8 +71,8 @@ export const SignUpForm = () => {
           Регистрация
         </Title>
       </Flex>
-      {signUpError && <Alert message={signUpError} type="error" style={{ marginBottom: "15px" }} />}
-      <TodoForm id="signUpForm" callback={handleSignUpUser} disabled={isPending}>
+      {data?.signUpError && <Alert message={data?.signUpError} type="error" style={{ marginBottom: "15px" }} />}
+      <TodoForm id="signUpForm" callback={handleSignUpUser} disabled={status.isPending}>
         <Form.Item
           name="username"
           label="Имя пользователя"
@@ -238,7 +236,7 @@ export const SignUpForm = () => {
           />
         </Form.Item>
       </TodoForm>
-      <Button form="signUpForm" htmlType="submit" type="primary" disabled={isPending} block>
+      <Button form="signUpForm" htmlType="submit" type="primary" disabled={status.isPending} block>
         Зарегистрироваться
       </Button>
       <Divider />

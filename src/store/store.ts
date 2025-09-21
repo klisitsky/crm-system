@@ -1,5 +1,4 @@
 import { combineSlices, configureStore } from "@reduxjs/toolkit/react";
-import { appSlice } from "./appSlice";
 import { authApi } from "@/api/authApi";
 import { authSlice } from "@/pages/AuthPage/AuthSlice";
 import { setupAxiosInterceptors } from "@/api/instanceApi";
@@ -8,7 +7,6 @@ import { profileSlice } from "@/pages/ProfilePage/profileSlice";
 import { usersApi } from "@/api/usersApi";
 import { usersSlice } from "@/pages/UsersPage/usersSlice";
 
-
 export const extraArgument = {
   authApi,
   profileApi,
@@ -16,7 +14,6 @@ export const extraArgument = {
 };
 
 const rootReducer = combineSlices({
-  [appSlice.name]: appSlice.reducer,
   [authSlice.name]: authSlice.reducer,
   [profileSlice.name]: profileSlice.reducer,
   [usersSlice.name]: usersSlice.reducer,

@@ -1,5 +1,5 @@
-import { createBrowserRouter, redirect } from "react-router";
 import App from "./App";
+import { createBrowserRouter, redirect } from "react-router";
 import { PrivateRoute } from "@/components/PrivateRoute/PrivateRoute";
 import { AppLayout } from "@/components/Layout/Layout";
 import { TodoListPage } from "@/pages/TodoListPage/todolistPage";
