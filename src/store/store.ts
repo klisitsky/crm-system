@@ -5,7 +5,6 @@ import { setupAxiosInterceptors } from "@/api/instanceApi";
 import { profileApi } from "@/api/profileApi";
 import { profileSlice } from "@/pages/ProfilePage/profileSlice";
 import { usersApi } from "@/api/usersApi";
-import { usersSlice } from "@/pages/UsersPage/usersSlice";
 
 export const extraArgument = {
   authApi,
@@ -16,7 +15,6 @@ export const extraArgument = {
 const rootReducer = combineSlices({
   [authSlice.name]: authSlice.reducer,
   [profileSlice.name]: profileSlice.reducer,
-  [usersSlice.name]: usersSlice.reducer,
 });
 
 export const store = configureStore({

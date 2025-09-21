@@ -1,27 +1,35 @@
-import { useAppDispatch, useAppSelector } from "@/app/redux";
 import { formatDate } from "@/utils/formatDate";
 import { CheckOutlined, CloseOutlined, DeleteFilled, UserOutlined } from "@ant-design/icons";
-import { Button, Card, Checkbox, Flex, Space, Switch, Table, Tag, Typography } from "antd";
-import { useEffect, useMemo, useState } from "react";
 import {
-  deleteUser,
-  fetchUsers,
-  updateUserIsBlockedStatus,
-  updateUserRights,
-  usersSlice,
-} from "./usersSlice";
-import type { Roles, User } from "@/types/users";
+  Button,
+  Card,
+  Checkbox,
+  Flex,
+  notification,
+  Space,
+  Switch,
+  Table,
+  Tag,
+  Typography,
+} from "antd";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { usersApi } from "@/api/usersApi";
+import { isEqualTwoArrays } from "@/utils/isEqualTwoArrays";
+import { getErrorMessage } from "@/utils/getErrorMessage";
+import type { Roles, User, UsersMetaInfo } from "@/types/users";
 import type { CheckboxOptionType, TableProps } from "antd";
 import type { ReactNode } from "react";
+import type { LoadingStatus } from "@/types/common";
 
 interface UserWithKey extends User {
   key: React.Key;
 }
+
 type ColumnTypes = Exclude<TableProps<UserWithKey>["columns"], undefined>;
 
 interface CustomizeCellComponents {
   ViewCell: (props: CellProps) => ReactNode;
-  EditorCell: (props: CellProps) => ReactNode;
+  EditorCell: (props: EditorCellProps) => ReactNode;
 }
 
 type ExtraColumnPropsMap = Record<string, CustomizeCellComponents>;
@@ -31,46 +39,43 @@ interface CellProps {
   toggleEditMode: () => void;
 }
 
+interface EditorCellProps extends CellProps {
+  isLoading?: boolean;
+  onUpdate?: () => void;
+}
+
 interface EditableCellProps extends CustomizeCellComponents {
   title: React.ReactNode;
   editable: boolean;
   dataIndex: keyof UserWithKey;
   record: UserWithKey;
+  isLoading: boolean;
+  onUpdate: () => void;
 }
-
-const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
-  title,
-  editable,
-  children,
-  dataIndex,
-  record,
-  EditorCell,
-  ViewCell,
-  ...restProps
-}) => {
-  const [editMode, setEditMode] = useState(false);
-  let childNode = children;
-
-  if (editable && record) {
-    const { key, ...restRecordProps } = record;
-
-    childNode = editMode ? (
-      <EditorCell key={key} toggleEditMode={() => setEditMode(false)} record={restRecordProps} />
-    ) : (
-      <ViewCell key={key} toggleEditMode={() => setEditMode(true)} record={restRecordProps} />
-    );
-  }
-
-  return <td {...restProps}>{childNode}</td>;
-};
 
 const isAdmin = (record: User): boolean => {
   return record.id === 1 || record.id === 2;
 };
 
 export const UsersPage = () => {
-  const dispatch = useAppDispatch();
-  const usersData = useAppSelector(usersSlice.selectors.selectUsersDataWithKey);
+  const [usersData, setUsersData] = useState<User[]>([]);
+  const [usersMetaInfo, setUsersMetaInfo] = useState<UsersMetaInfo>({
+    totalAmount: 0,
+    sortBy: "",
+    sortOrder: "asc",
+  });
+
+  const [appError, setAppError] = useState<string>("");
+  const [api, contextHolder] = notification.useNotification();
+
+  const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>("idle");
+  const isPending = loadingStatus === "pending";
+
+  useEffect(() => {
+    if (appError) {
+      api["error"]({ message: appError, placement: "bottomLeft" });
+    }
+  }, [appError, api]);
 
   const usersDataWithKey = useMemo(() => {
     return usersData.map((user) => {
@@ -79,9 +84,26 @@ export const UsersPage = () => {
     });
   }, [usersData]);
 
+  const fetchUsers = useCallback(async () => {
+    setAppError(() => "");
+    try {
+      setLoadingStatus("pending");
+      const users = await usersApi.fetchUsers();
+
+      if (!isEqualTwoArrays(usersData, users.data)) {
+        setUsersData(users.data);
+        setUsersMetaInfo(users.meta);
+      }
+      setLoadingStatus(() => "succeed");
+    } catch (err) {
+      setAppError(() => getErrorMessage(err));
+      setLoadingStatus(() => "failed");
+    }
+  }, []);
+
   useEffect(() => {
-    dispatch(fetchUsers({}));
-  }, [dispatch]);
+    fetchUsers();
+  }, [fetchUsers]);
 
   const defaultColumns: (ColumnTypes[number] & { editable?: boolean; dataIndex: string })[] = [
     {
@@ -164,34 +186,78 @@ export const UsersPage = () => {
         editable: col.editable,
         dataIndex: col.dataIndex,
         title: col.title,
+        isLoading: isPending,
+        onUpdate: fetchUsers,
         ViewCell: extraColumnPropsMap[col.dataIndex].ViewCell,
         EditorCell: extraColumnPropsMap[col.dataIndex].EditorCell,
       }),
     };
   });
 
-  const handleDeleteUser = (userId: number) => {
-    dispatch(deleteUser(userId));
+  const handleDeleteUser = async (userId: number) => {
+    try {
+      await usersApi.deleteUser(userId);
+      fetchUsers();
+    } catch (err) {
+      alert(getErrorMessage(err));
+    }
   };
 
   return (
-    <Card>
-      <Typography.Title level={2}>Управление пользователями</Typography.Title>
-      <Table<UserWithKey>
-        columns={columns as ColumnTypes}
-        bordered
-        components={{
-          body: {
-            cell: EditableCell,
-          },
-        }}
-        dataSource={usersDataWithKey}
-        showSorterTooltip={{ target: "sorter-icon" }}
-        size="small"
-        pagination={{ current: 1, defaultPageSize: 20 }}
-      />
-    </Card>
+    <>
+      <Card>
+        <Typography.Title level={2}>Управление пользователями</Typography.Title>
+        <Table<UserWithKey>
+          columns={columns as ColumnTypes}
+          bordered
+          components={{
+            body: {
+              cell: EditableCell,
+            },
+          }}
+          dataSource={usersDataWithKey}
+          showSorterTooltip={{ target: "sorter-icon" }}
+          size="small"
+          pagination={{ current: 1, defaultPageSize: 20 }}
+        />
+      </Card>
+      {contextHolder}
+    </>
   );
+};
+
+const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
+  title,
+  editable,
+  children,
+  dataIndex,
+  record,
+  isLoading,
+  onUpdate,
+  EditorCell,
+  ViewCell,
+  ...restProps
+}) => {
+  const [editMode, setEditMode] = useState(false);
+  let childNode = children;
+
+  if (editable && record) {
+    const { key, ...restRecordProps } = record;
+
+    childNode = editMode ? (
+      <EditorCell
+        key={key}
+        onUpdate={onUpdate}
+        isLoading={isLoading}
+        toggleEditMode={() => setEditMode(false)}
+        record={restRecordProps}
+      />
+    ) : (
+      <ViewCell key={key} toggleEditMode={() => setEditMode(true)} record={restRecordProps} />
+    );
+  }
+
+  return <td {...restProps}>{childNode}</td>;
 };
 
 const RolesViewCell = ({ record, toggleEditMode }: CellProps) => {
@@ -237,10 +303,8 @@ const IsBlockedViewCell = ({ record, toggleEditMode }: CellProps) => {
   );
 };
 
-const RolesEditForm = ({ record, toggleEditMode }: CellProps) => {
-  const dispatch = useAppDispatch();
+const RolesEditForm = ({ record, toggleEditMode, isLoading, onUpdate }: EditorCellProps) => {
   const [roles, setRoles] = useState<string[]>(record.roles);
-  const isPending = useAppSelector(usersSlice.selectors.updateUserRightsPending);
 
   const rolesOptions: CheckboxOptionType<string>[] = [
     { label: "USER", value: "USER" },
@@ -249,8 +313,15 @@ const RolesEditForm = ({ record, toggleEditMode }: CellProps) => {
   ];
 
   const handleUpdateUserRights = async () => {
-    await dispatch(updateUserRights({ id: record.id, params: { roles: roles as Roles[] } }));
-    toggleEditMode();
+    try {
+      await usersApi.updateUserRights(record.id, { roles: roles as Roles[] });
+      toggleEditMode();
+      if (onUpdate) {
+        onUpdate();
+      }
+    } catch (err) {
+      alert(getErrorMessage(err));
+    }
   };
 
   return (
@@ -258,7 +329,7 @@ const RolesEditForm = ({ record, toggleEditMode }: CellProps) => {
       <Checkbox.Group
         options={rolesOptions}
         value={roles}
-        disabled={isPending}
+        disabled={isLoading}
         onChange={(roles: string[]) => {
           setRoles(roles);
         }}
@@ -269,7 +340,7 @@ const RolesEditForm = ({ record, toggleEditMode }: CellProps) => {
           variant="solid"
           color="blue"
           icon={<CheckOutlined />}
-          disabled={roles.length === 0 || isPending}
+          disabled={roles.length === 0 || isLoading}
           onClick={handleUpdateUserRights}
         />
         <Button
@@ -277,7 +348,7 @@ const RolesEditForm = ({ record, toggleEditMode }: CellProps) => {
           variant="outlined"
           color="blue"
           icon={<CloseOutlined />}
-          disabled={roles.length === 0 || isPending}
+          disabled={roles.length === 0 || isLoading}
           onClick={toggleEditMode}
         />
       </Flex>
@@ -285,13 +356,23 @@ const RolesEditForm = ({ record, toggleEditMode }: CellProps) => {
   );
 };
 
-const IsBlockedEditForm = ({ toggleEditMode, record }: CellProps) => {
-  const dispatch = useAppDispatch();
+const IsBlockedEditForm = ({ toggleEditMode, record, isLoading, onUpdate }: EditorCellProps) => {
   const [isBlockedStatus, setIsBlockedStatus] = useState(record.isBlocked);
-  const isPending = useAppSelector(usersSlice.selectors.updateUserIsBlockedStatusPending);
 
-  const handleUpdateIsBlockedStatus = () => {
-    dispatch(updateUserIsBlockedStatus({ id: record.id, isBlocked: isBlockedStatus }));
+  const handleUpdateIsBlockedStatus = async () => {
+    try {
+      if (record.isBlocked) {
+        await usersApi.unblockUser(record.id);
+      } else {
+        await usersApi.blockUser(record.id);
+      }
+      toggleEditMode();
+      if (onUpdate) {
+        onUpdate();
+      }
+    } catch (err) {
+      alert(getErrorMessage(err));
+    }
     toggleEditMode();
   };
 
@@ -300,7 +381,7 @@ const IsBlockedEditForm = ({ toggleEditMode, record }: CellProps) => {
       <Switch
         checked={isBlockedStatus}
         onChange={() => setIsBlockedStatus((prev) => !prev)}
-        disabled={isPending}
+        disabled={isLoading}
       />
       <Flex gap="small">
         <Button
@@ -309,7 +390,7 @@ const IsBlockedEditForm = ({ toggleEditMode, record }: CellProps) => {
           color="blue"
           icon={<CheckOutlined />}
           onClick={handleUpdateIsBlockedStatus}
-          disabled={isPending}
+          disabled={isLoading}
         />
         <Button
           size="small"
@@ -317,7 +398,7 @@ const IsBlockedEditForm = ({ toggleEditMode, record }: CellProps) => {
           color="blue"
           icon={<CloseOutlined />}
           onClick={toggleEditMode}
-          disabled={isPending}
+          disabled={isLoading}
         />
       </Flex>
     </Flex>
