@@ -1,21 +1,20 @@
-import { LoadingOutlined } from "@ant-design/icons";
-import { Flex } from "antd";
 import notification from "antd/es/notification";
 import Spin from "antd/es/spin";
+import { REFRESH_TOKEN } from "@/components/constants/localStorageValues";
+import { checkAuth } from "@/pages/AuthPage/AuthSlice";
+import { LoadingOutlined } from "@ant-design/icons";
+import { Flex } from "antd";
 import { useEffect } from "react";
 import { Outlet } from "react-router";
+import { useAppDispatch, useAppSelector } from "../store/redux";
 import "./App.css";
-import { appSlice } from "./appSlice";
-import { useAppDispatch, useAppSelector } from "./redux";
-import { authSlice, checkAuth } from "@/pages/AuthPage/AuthSlice";
-import { REFRESH_TOKEN } from "@/components/constants/localStorageValues";
+import { selectAuthRequestData } from "@/store/selectors.ts/authSelectors";
 
 function App() {
   const dispatch = useAppDispatch();
-  const [api, contextHolder] = notification.useNotification();
 
-  const appError = useAppSelector(appSlice.selectors.selectError);
-  const isPending = useAppSelector(authSlice.selectors.selectIsRefreshTokenStatusPending);
+  const [api, contextHolder] = notification.useNotification();
+  const { error, status } = useAppSelector(selectAuthRequestData);
 
   useEffect(() => {
     if (localStorage.getItem(REFRESH_TOKEN)) {
@@ -24,12 +23,12 @@ function App() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (appError) {
-      api["error"]({ message: appError, placement: "bottomLeft" });
+    if (error) {
+      api["error"]({ message: error, placement: "bottomLeft" });
     }
-  }, [appError, api]);
+  }, [error, api]);
 
-  return isPending ? (
+  return status.isPending ? (
     <Flex justify="center">
       <Spin size="large" indicator={<LoadingOutlined spin />} />
     </Flex>

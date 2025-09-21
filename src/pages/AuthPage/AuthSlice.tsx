@@ -1,172 +1,139 @@
-import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { createAppAsyncThunk } from "@/app/redux";
-import { REFRESH_TOKEN } from "@/components/constants/localStorageValues";
-import { appSlice } from "@/app/appSlice";
-import { getErrorMessage } from "@/utils/getErrorMessage";
-import { API_URL } from "@/api/instanceApi";
 import { authApi } from "@/api/authApi";
-import type { LoadingStatus } from "@/types/common";
-import type { PayloadAction } from "@reduxjs/toolkit";
+import { API_URL } from "@/api/instanceApi";
+import { REFRESH_TOKEN } from "@/components/constants/localStorageValues";
+import { getErrorMessage } from "@/utils/getErrorMessage";
+import { createSlice } from "@reduxjs/toolkit";
+import { createAppAsyncThunk } from "@/store/redux";
+import { addAsyncBuilderCases, getAsyncDataStatus, initAsyncParticle } from "@/store/utils";
+import type { AsyncParticle, SliceThunk } from "@/store/utils";
 import type { AuthData, Token, UserRegistration } from "@/types/auth";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
-export interface InitialAuthState {
+export interface InitialStateData {
   isAuthorization: boolean;
   accessToken: string;
-  loginStatus: LoadingStatus;
-  signUpStatus: LoadingStatus;
-  refreshTokenStatus: LoadingStatus;
-  logOutStatus: LoadingStatus;
-  userNewCreated: boolean;
+  isNewUserCreated: boolean;
   loginError: string;
   signUpError: string;
 }
 
-const initialAuthState: InitialAuthState = {
+const initialStateData: InitialStateData = {
   isAuthorization: false,
   accessToken: "",
-  loginStatus: "idle",
-  signUpStatus: "idle",
-  refreshTokenStatus: "idle",
-  logOutStatus: "idle",
-  userNewCreated: false,
+  isNewUserCreated: false,
   loginError: "",
   signUpError: "",
 };
+
+const initialAuthState = initAsyncParticle<InitialStateData>(initialStateData);
 
 export const authSlice = createSlice({
   name: "auth",
   initialState: initialAuthState,
   reducers: {
     setLoginError: (state, action: PayloadAction<string>) => {
-      state.loginError = action.payload;
+      state.data.loginError = action.payload;
     },
     setSignUpError: (state, action: PayloadAction<string>) => {
-      state.signUpError = action.payload;
+      state.data.signUpError = action.payload;
+    },
+    setError: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
     },
     toggleIsUserNewCreated: (state) => {
-      state.userNewCreated = false;
+      state.data.isNewUserCreated = false;
     },
     setAccessToken: (state, action: PayloadAction<string>) => {
-      state.accessToken = action.payload;
+      state.data.accessToken = action.payload;
+    },
+    setIsAuthorizationFalse: (state) => {
+      state.data.isAuthorization = false;
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(loginUser.pending, (state) => {
-      state.loginStatus = "pending";
-    });
-    builder.addCase(loginUser.fulfilled, (state, action) => {
-      state.loginStatus = "succeed";
-      state.accessToken = action.payload;
-      state.isAuthorization = true;
-    });
-    builder.addCase(loginUser.rejected, (state) => {
-      state.loginStatus = "failed";
-    });
-    builder.addCase(checkAuth.pending, (state) => {
-      state.refreshTokenStatus = "pending";
-    });
-    builder.addCase(checkAuth.fulfilled, (state, action) => {
-      state.refreshTokenStatus = "succeed";
-      state.accessToken = action.payload;
-      state.isAuthorization = true;
-    });
-    builder.addCase(checkAuth.rejected, (state) => {
-      state.refreshTokenStatus = "failed";
-      state.accessToken = "";
-      state.isAuthorization = false;
-    });
-    builder.addCase(signUpUser.pending, (state) => {
-      state.signUpStatus = "pending";
-    });
-    builder.addCase(signUpUser.fulfilled, (state) => {
-      state.signUpStatus = "succeed";
-      state.userNewCreated = true;
-    });
-    builder.addCase(signUpUser.rejected, (state) => {
-      state.signUpStatus = "failed";
-    });
-    builder.addCase(logOutUser.fulfilled, (state) => {
-      state.signUpStatus = "succeed";
-      state.accessToken = "";
-      state.isAuthorization = false;
-    });
-    builder.addCase(logOutUser.pending, (state) => {
-      state.signUpStatus = "pending";
-    });
-    builder.addCase(logOutUser.rejected, (state) => {
-      state.signUpStatus = "failed";
-    });
-  },
-  selectors: {
-    selectIsAuthorization: (state) => state.isAuthorization,
-    selectIsLoginStatusPending: (state) => state.loginStatus === "pending",
-    selectIsSignUpStatusPending: (state) => state.signUpStatus === "pending",
-    selectIsRefreshTokenStatusPending: (state) => state.refreshTokenStatus === "pending",
-    selectIsLogOutStatusPending: (state) => state.logOutStatus === "pending",
-    selectIsNewUserCreated: (state) => state.userNewCreated,
-    selectLoginError: (state) => state.loginError,
-    selectSignUpError: (state) => state.signUpError,
+    addAsyncBuilderCases<AsyncParticle<InitialStateData>, InitialStateData, AuthData>(
+      builder,
+      loginUser
+    );
+    addAsyncBuilderCases<AsyncParticle<InitialStateData>, InitialStateData>(builder, checkAuth);
+    addAsyncBuilderCases<AsyncParticle<InitialStateData>, InitialStateData, UserRegistration>(
+      builder,
+      signUpUser
+    );
+    addAsyncBuilderCases<AsyncParticle<InitialStateData>, InitialStateData>(builder, logOutUser);
   },
 });
 
-export const loginUser = createAppAsyncThunk(
-  "auth/login",
-  async (arg: AuthData, { extra, dispatch, rejectWithValue }) => {
-    try {
-      dispatch(authSlice.actions.setLoginError(""));
-      const res = await extra.authApi.login(arg);
-      localStorage.setItem(REFRESH_TOKEN, res.refreshToken);
+export const authAsyncDataStatus = getAsyncDataStatus(initialAuthState);
 
-      return res.accessToken;
-    } catch (err) {
-      dispatch(authSlice.actions.setLoginError(getErrorMessage(err)));
-      return rejectWithValue(null);
-    }
+export const loginUser: SliceThunk<InitialStateData, AuthData> = createAppAsyncThunk<
+  InitialStateData,
+  AuthData
+>("auth/login", async (arg, { extra, dispatch, rejectWithValue, getState }) => {
+  try {
+    dispatch(authSlice.actions.setLoginError(""));
+
+    const authStateData = getState().auth.data;
+    const res = await extra.authApi.login(arg);
+    localStorage.setItem(REFRESH_TOKEN, res.refreshToken);
+
+    return { ...authStateData, accessToken: res.accessToken, isAuthorization: true };
+  } catch (err) {
+    dispatch(authSlice.actions.setLoginError(getErrorMessage(err)));
+    return rejectWithValue(null);
   }
-);
+});
 
-export const signUpUser = createAppAsyncThunk(
-  "auth/signup",
-  async (arg: UserRegistration, { extra, dispatch, rejectWithValue }) => {
-    try {
-      dispatch(authSlice.actions.setSignUpError(""));
-      const res = await extra.authApi.signUp(arg);
-      return res;
-    } catch (err) {
-      dispatch(authSlice.actions.setSignUpError(getErrorMessage(err)));
-      return rejectWithValue(null);
-    }
+export const signUpUser: SliceThunk<InitialStateData, UserRegistration> = createAppAsyncThunk<
+  InitialStateData,
+  UserRegistration
+>("auth/signup", async (arg, { extra, dispatch, rejectWithValue, getState }) => {
+  try {
+    dispatch(authSlice.actions.setSignUpError(""));
+    const authStateData = getState().auth.data;
+    await extra.authApi.signUp(arg);
+
+    return { ...authStateData, isNewUserCreated: true };
+  } catch (err) {
+    dispatch(authSlice.actions.setSignUpError(getErrorMessage(err)));
+    return rejectWithValue(null);
   }
-);
+});
 
-export const checkAuth = createAppAsyncThunk(
+export const checkAuth: SliceThunk<InitialStateData> = createAppAsyncThunk<InitialStateData>(
   "auth/refresh",
-  async (_, { dispatch, rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue, getState }) => {
     try {
-      dispatch(appSlice.actions.setError(""));
+      dispatch(authSlice.actions.setError(""));
+      const authStateData = getState().auth.data;
       const refreshToken = localStorage.getItem(REFRESH_TOKEN);
+
       const res = await axios.post<Token>(`${API_URL}/auth/refresh`, { refreshToken });
       localStorage.setItem(REFRESH_TOKEN, res.data.refreshToken);
 
-      return res.data.accessToken;
+      return { ...authStateData, accessToken: res.data.accessToken, isAuthorization: true };
     } catch (err) {
-      dispatch(appSlice.actions.setError(getErrorMessage(err)));
-      return rejectWithValue(null);
+      dispatch(authSlice.actions.setAccessToken(""));
+      dispatch(authSlice.actions.setIsAuthorizationFalse());
+      return rejectWithValue(getErrorMessage(err));
     }
   }
 );
 
-export const logOutUser = createAppAsyncThunk(
+export const logOutUser: SliceThunk<InitialStateData> = createAppAsyncThunk<InitialStateData>(
   "auth/logout",
-  async (_, { dispatch, rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue, getState }) => {
     try {
-      dispatch(appSlice.actions.setError(""));
+      dispatch(authSlice.actions.setError(""));
+      const authStateData = getState().auth.data;
+
       await authApi.logout();
       localStorage.removeItem(REFRESH_TOKEN);
+
+      return { ...authStateData, accessToken: "", isAuthorization: false };
     } catch (err) {
-      dispatch(appSlice.actions.setError(getErrorMessage(err)));
-      return rejectWithValue(null);
+      return rejectWithValue(getErrorMessage(err));
     }
   }
 );

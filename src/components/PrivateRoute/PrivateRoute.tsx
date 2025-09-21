@@ -1,7 +1,7 @@
-import { useAppSelector } from "@/app/redux";
+import { useAppSelector } from "../../store/redux";
 import { AUTH_PATH } from "@/components/constants/paths";
-import { authSlice } from "@/pages/AuthPage/AuthSlice";
 import { Navigate, useLocation } from "react-router";
+import { selectAuthRequestData } from "@/store/selectors.ts/authSelectors";
 import type { FC, ReactNode } from "react";
 
 interface ProtectedRoutes {
@@ -9,11 +9,11 @@ interface ProtectedRoutes {
 }
 
 export const PrivateRoute: FC<ProtectedRoutes> = ({ children }) => {
-  const isAuthorization = useAppSelector(authSlice.selectors.selectIsAuthorization);
+  const { data } = useAppSelector(selectAuthRequestData);
   const location = useLocation();
-  
-  if (!isAuthorization) {
-    return <Navigate to={`${AUTH_PATH}?mode=login`} state={{ from: location }} replace/>;
+
+  if (!data?.isAuthorization) {
+    return <Navigate to={`${AUTH_PATH}?mode=login`} state={{ from: location }} replace />;
   } else {
     return children;
   }

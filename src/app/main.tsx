@@ -5,7 +5,7 @@ import "../styles/index.scss";
 import "./index.css";
 import { router } from "./router";
 import { Provider } from "react-redux";
-import { store } from "./store";
+import { store } from "@/store/store";
 
 const root = document.getElementById("root");
 

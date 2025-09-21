@@ -2,7 +2,7 @@ import { REFRESH_TOKEN } from "@/components/constants/localStorageValues";
 import { authSlice } from "@/pages/AuthPage/AuthSlice";
 import axios, { AxiosError } from "axios";
 import type { AxiosResponse, InternalAxiosRequestConfig } from "axios";
-import type { AppDispatch, RootState } from "@/app/redux";
+import type { AppDispatch, RootState } from "../store/redux";
 import type { Token } from "@/types/auth";
 
 interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
@@ -17,7 +17,7 @@ export const instance = axios.create({
 
 export const setupAxiosInterceptors = (dispatch: AppDispatch, getState: () => RootState) => {
   instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-    config.headers.Authorization = `Bearer ${getState().auth.accessToken}`;
+    config.headers.Authorization = `Bearer ${getState().auth.data.accessToken}`;
     return config;
   });
 
