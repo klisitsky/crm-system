@@ -3,8 +3,8 @@ export interface UserFilters {
   sortBy?: string;
   sortOrder?: "asc" | "desc";
   isBlocked?: boolean;
-  limit?: number; // сколько на странице
-  offset?: number; // страницу
+  limit?: number;
+  page?: number; 
 }
 
 export interface User {
@@ -29,12 +29,9 @@ export interface MetaResponse<T> {
 }
 
 export interface UserRolesRequest {
-  roles: Roles[]; // при вызове этой апи роли будут обновлены к тому массиву который будет передан
-  // например если у вас была roles: ['ADMIN'] а вы хотите добавить ['MODERATOR'] то нужно передавать
-  // старые + новые - roles: ['ADMIN', 'MODERATOR']
+  roles: Roles[];
 }
 
-// Интерфейс для обновления данных пользователя
 export interface UserRequest {
   username?: string;
   email?: string;
