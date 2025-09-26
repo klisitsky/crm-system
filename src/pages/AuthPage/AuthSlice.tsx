@@ -4,9 +4,9 @@ import { API_URL } from "@/api/instanceApi";
 import { REFRESH_TOKEN } from "@/components/constants/localStorageValues";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 import { createSlice } from "@reduxjs/toolkit";
-import { createAppAsyncThunk } from "@/store/redux";
-import { addAsyncBuilderCases, getAsyncDataStatus, initAsyncParticle } from "@/store/utils";
-import type { AsyncParticle, SliceThunk } from "@/store/utils";
+import { createAppAsyncThunk } from "../../redux";
+import { addAsyncBuilderCases, getAsyncDataStatus, initAsyncParticle } from "@/utils";
+import type { AsyncParticle, SliceThunk } from "@/utils";
 import type { AuthData, Token, UserRegistration } from "@/types/auth";
 import type { PayloadAction } from "@reduxjs/toolkit";
 

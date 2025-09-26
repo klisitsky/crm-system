@@ -1,18 +1,18 @@
 import Title from "antd/es/typography/Title";
-import { TodoForm } from "@/components/TodoForm/TodoForm";
-import { AUTH_PATH } from "@/components/constants/paths";
+import { CustomForm } from "../../components/CustomForm/CustomForm";
+import { AUTH_PATH, LOGIN_PATH } from "@/components/constants/paths";
 import { authSlice, signUpUser } from "@/pages/AuthPage/AuthSlice";
-import { selectAuthRequestData } from "@/store/selectors.ts/authSelectors";
+import { selectAuthRequestData } from "../../selectors.ts/authSelectors";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Alert, Button, Divider, Flex, Form, Input, Result } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { useAppDispatch, useAppSelector } from "../../store/redux";
+import { useAppDispatch, useAppSelector } from "../../redux";
 import type { UserRegistration } from "@/types/auth";
 
 export type UserRegistrationKeys = keyof UserRegistration;
 
-export const SignUpForm = () => {
+export const SignUpPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -72,7 +72,7 @@ export const SignUpForm = () => {
         </Title>
       </Flex>
       {data?.signUpError && <Alert message={data?.signUpError} type="error" style={{ marginBottom: "15px" }} />}
-      <TodoForm id="signUpForm" callback={handleSignUpUser} disabled={status.isPending}>
+      <CustomForm id="signUpForm" callback={handleSignUpUser} disabled={status.isPending}>
         <Form.Item
           name="username"
           label="Имя пользователя"
@@ -235,13 +235,13 @@ export const SignUpForm = () => {
             }}
           />
         </Form.Item>
-      </TodoForm>
+      </CustomForm>
       <Button form="signUpForm" htmlType="submit" type="primary" disabled={status.isPending} block>
         Зарегистрироваться
       </Button>
       <Divider />
       <div>
-        Уже есть аккаунт? <Link to={"?mode=login"}>Войти</Link>
+        Уже есть аккаунт? <Link to={`../${LOGIN_PATH}`}>Войти</Link>
       </div>
     </>
   );

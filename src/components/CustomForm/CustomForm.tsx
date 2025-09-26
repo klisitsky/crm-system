@@ -1,5 +1,5 @@
-import { Form } from "antd";
 import React, { memo } from "react";
+import { Form } from "antd";
 import type { ReactNode } from "react";
 
 interface TodoForm {
@@ -10,7 +10,7 @@ interface TodoForm {
   disabled?: boolean;
 }
 
-export const TodoForm: React.FC<TodoForm> = memo(
+export const CustomForm: React.FC<TodoForm> = memo(
   ({ id, initialValues, callback, children, disabled }) => {
     const [form] = Form.useForm();
 

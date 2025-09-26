@@ -1,8 +1,8 @@
 import memoize from "memoize";
 import type { LoadingStatus } from "@/types/common";
 import type { ActionReducerMapBuilder, AsyncThunk } from "@reduxjs/toolkit";
-import type { AppDispatch, RootState } from "./redux";
-import type { extraArgument } from "./store";
+import type { AppDispatch, RootState } from "@/redux";
+import type { extraArgument } from "@/store";
 
 export interface AsyncParticle<T> {
   data: T;
