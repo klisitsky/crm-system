@@ -1,8 +1,8 @@
-import { addAsyncBuilderCases, getAsyncDataStatus, initAsyncParticle } from "../../utils";
+import { addAsyncBuilderCases, getAsyncDataStatus, initAsyncParticle } from "@/utils";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 import { createSlice } from "@reduxjs/toolkit";
-import { createAppAsyncThunk } from "../../redux";
-import type { AsyncParticle, SliceThunk } from "../../utils";
+import { createAppAsyncThunk } from "@/redux";
+import type { AsyncParticle, SliceThunk } from "@/utils";
 import type { Profile } from "@/types/profile";
 import type { PayloadAction } from "@reduxjs/toolkit";
 

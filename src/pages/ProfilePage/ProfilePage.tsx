@@ -1,8 +1,8 @@
-import { useAppDispatch, useAppSelector } from "../../redux";
+import { useAppDispatch, useAppSelector } from "@/redux";
 import { Card, notification, Typography } from "antd";
 import { useEffect } from "react";
-import { fetchProfile } from "./profileSlice";
-import { selectProfileRequestData } from "../../selectors.ts/profileSelectors";
+import { fetchProfile } from "@/pages/ProfilePage/profileSlice";
+import { selectProfileRequestData } from "@/selectors.ts/profileSelectors";
 
 const { Text } = Typography;
 

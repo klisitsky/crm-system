@@ -4,9 +4,9 @@ import { loginUser } from "@/pages/AuthPage/AuthSlice";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Alert, Button, Divider, Flex, Form, Input } from "antd";
 import { Link } from "react-router";
-import { CustomForm } from "../../components/CustomForm/CustomForm";
-import { useAppDispatch, useAppSelector } from "../../redux";
-import { selectAuthRequestData } from "../../selectors.ts/authSelectors";
+import { CustomForm } from "@/components/CustomForm/CustomForm";
+import { useAppDispatch, useAppSelector } from "@/redux";
+import { selectAuthRequestData } from "@/selectors.ts/authSelectors";
 import type { AuthData } from "@/types/auth";
 
 type FormInitialValuesKeys = keyof AuthData;

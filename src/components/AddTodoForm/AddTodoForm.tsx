@@ -1,6 +1,6 @@
 import { todosApi } from "@/api/todosApi";
 import { MAX_TODOS_SYMBOLS_COUNT, MIN_TODOS_SYMBOLS_COUNT } from "@/components/constants/todos";
-import { CustomForm } from "../CustomForm/CustomForm";
+import { CustomForm } from "@/components/CustomForm/CustomForm";
 import { Button, Flex, Form, Input } from "antd";
 import { memo } from "react";
 

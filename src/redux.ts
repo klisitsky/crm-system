@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { useDispatch, useSelector, useStore } from "react-redux";
-import type { extraArgument, store } from "./store";
+import type { extraArgument, store } from "@/store";
 import type { ThunkAction, UnknownAction } from "@reduxjs/toolkit";
 
 export type RootState = ReturnType<typeof store.getState>;

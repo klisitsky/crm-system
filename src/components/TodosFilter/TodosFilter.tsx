@@ -1,6 +1,6 @@
 import { Button, Flex, Typography } from "antd";
 import { memo } from "react";
-import s from "./TodosFilter.module.scss";
+import s from "@/components/TodosFilter.module.scss";
 import type { Dispatch } from "react";
 import type { FilterStatus, TodoInfo } from "@/types/todos";
 

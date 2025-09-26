@@ -6,10 +6,10 @@ import Card from "antd/es/card/Card";
 import Checkbox from "antd/es/checkbox/Checkbox";
 import { todosApi } from "@/api/todosApi";
 import { MAX_TODOS_SYMBOLS_COUNT, MIN_TODOS_SYMBOLS_COUNT } from "@/components/constants/todos";
-import { CustomForm } from "../CustomForm/CustomForm";
+import { CustomForm } from "@/components/CustomForm/CustomForm";
 import { Button, Flex, Form, Input, Typography } from "antd";
 import React, { memo, useCallback, useState } from "react";
-import s from "./TodoCard.module.scss";
+import s from "@components/TodoCard.module.scss";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 import type { Todo } from "@/types/todos";
 
