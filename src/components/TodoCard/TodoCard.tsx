@@ -6,7 +6,7 @@ import Card from "antd/es/card/Card";
 import Checkbox from "antd/es/checkbox/Checkbox";
 import { todosApi } from "@/api/todosApi";
 import { MAX_TODOS_SYMBOLS_COUNT, MIN_TODOS_SYMBOLS_COUNT } from "@/components/constants/todos";
-import { TodoForm } from "@/components/TodoForm/TodoForm";
+import { CustomForm } from "../CustomForm/CustomForm";
 import { Button, Flex, Form, Input, Typography } from "antd";
 import React, { memo, useCallback, useState } from "react";
 import s from "./TodoCard.module.scss";
@@ -79,7 +79,7 @@ export const TodoCard: React.FC<TodoCard> = memo(({ todo, isLoading, onUpdate, u
       <Flex gap="small" align="center" justify="space-between">
         <Checkbox checked={todo.isDone} disabled={isLoading} onChange={handleUpdateTodoStatus} />
         {isEdit ? (
-          <TodoForm
+          <CustomForm
             id="editForm"
             initialValues={{ title: todo.title }}
             callback={handleUpdateTodoTitle}
@@ -115,7 +115,7 @@ export const TodoCard: React.FC<TodoCard> = memo(({ todo, isLoading, onUpdate, u
                 style={{ backgroundColor: "transparent" }}
               />
             </Form.Item>
-          </TodoForm>
+          </CustomForm>
         ) : (
           <Typography.Text
             className={`${todo.isDone ? s.todoIsDone : ""}`}

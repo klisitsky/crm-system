@@ -1,14 +1,10 @@
-import { AppMenu } from "@/components/AppMenu/AppMenu";
 import Sider from "antd/es/layout/Sider";
 import Layout, { Content } from "antd/es/layout/layout";
-import type { FC, ReactNode } from "react";
-import { AppHeader } from "../AppHeader/AppHeader";
+import { AppMenu } from "@/components/AppMenu/AppMenu";
+import { Outlet } from "react-router-dom";
+import { AppHeader } from "@/components/AppHeader/AppHeader";
 
-interface AppLayout {
-  children: ReactNode;
-}
-
-export const AppLayout: FC<AppLayout> = ({ children }) => {
+export const AppLayout = () => {
   return (
     <Layout>
       <Sider theme="dark" breakpoint="lg" collapsedWidth="0" style={{ minHeight: "100vh" }}>
@@ -16,7 +12,9 @@ export const AppLayout: FC<AppLayout> = ({ children }) => {
       </Sider>
       <Layout>
         <AppHeader />
-        <Content style={{ margin: "25px" }}>{children}</Content>
+        <Content style={{ margin: "25px" }}>
+          <Outlet />
+        </Content>
       </Layout>
     </Layout>
   );

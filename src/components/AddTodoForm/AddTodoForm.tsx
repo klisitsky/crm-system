@@ -1,6 +1,6 @@
 import { todosApi } from "@/api/todosApi";
 import { MAX_TODOS_SYMBOLS_COUNT, MIN_TODOS_SYMBOLS_COUNT } from "@/components/constants/todos";
-import { TodoForm } from "@/components/TodoForm/TodoForm";
+import { CustomForm } from "../CustomForm/CustomForm";
 import { Button, Flex, Form, Input } from "antd";
 import { memo } from "react";
 
@@ -19,7 +19,7 @@ export const AddTodoForm: React.FC<AddTodoForm> = memo(({ isLoading, onUpdate })
 
   return (
     <Flex gap="large" justify="center">
-      <TodoForm id="addForm" callback={handleCreateTodo}>
+      <CustomForm id="addForm" callback={handleCreateTodo}>
         <Form.Item
           style={{ margin: 0, flex: 1 }}
           name="title"
@@ -52,7 +52,7 @@ export const AddTodoForm: React.FC<AddTodoForm> = memo(({ isLoading, onUpdate })
             style={{ backgroundColor: "transparent" }}
           />
         </Form.Item>
-      </TodoForm>
+      </CustomForm>
       <Button
         form="addForm"
         type="primary"

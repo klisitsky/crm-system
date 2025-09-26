@@ -2,7 +2,7 @@ import { REFRESH_TOKEN } from "@/components/constants/localStorageValues";
 import { authSlice } from "@/pages/AuthPage/AuthSlice";
 import axios, { AxiosError } from "axios";
 import type { AxiosResponse, InternalAxiosRequestConfig } from "axios";
-import type { AppDispatch, RootState } from "../store/redux";
+import type { AppDispatch, RootState } from "../redux";
 import type { Token } from "@/types/auth";
 
 interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
