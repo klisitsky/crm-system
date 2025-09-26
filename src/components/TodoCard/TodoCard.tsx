@@ -9,7 +9,7 @@ import { MAX_TODOS_SYMBOLS_COUNT, MIN_TODOS_SYMBOLS_COUNT } from "@/components/c
 import { CustomForm } from "@/components/CustomForm/CustomForm";
 import { Button, Flex, Form, Input, Typography } from "antd";
 import React, { memo, useCallback, useState } from "react";
-import s from "@components/TodoCard.module.scss";
+import s from "@components/TodoCard/TodoCard.module.scss";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 import type { Todo } from "@/types/todos";
 
