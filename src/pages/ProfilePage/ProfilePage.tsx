@@ -1,14 +1,14 @@
-import { useAppDispatch, useAppSelector } from "@/redux";
-import { Card, notification, Typography } from "antd";
-import { useEffect } from "react";
+import { UserInfo } from "@/components/UserInfo/UserInfo";
 import { fetchProfile } from "@/pages/ProfilePage/profileSlice";
+import { useAppDispatch, useAppSelector } from "@/redux";
 import { selectProfileRequestData } from "@/selectors.ts/profileSelectors";
+import { notification } from "antd";
+import { useEffect } from "react";
 
-const { Text } = Typography;
 
 export const ProfilePage = () => {
   const dispatch = useAppDispatch();
-  const { data, error } = useAppSelector(selectProfileRequestData);
+  const { data: profileData, error } = useAppSelector(selectProfileRequestData);
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -24,20 +24,7 @@ export const ProfilePage = () => {
 
   return (
     <>
-      <Card title="Личные данные" variant="borderless" style={{ width: 300 }}>
-        <p>
-          <Text strong>Имя: </Text>
-          <Text>{data?.username}</Text>
-        </p>
-        <p>
-          <Text strong>Почта: </Text>
-          <Text>{data?.email}</Text>
-        </p>
-        <p>
-          <Text strong>Телефон: </Text>
-          <Text>{data?.phoneNumber}</Text>
-        </p>
-      </Card>
+      <UserInfo data={profileData}/>
       {contextHolder}
     </>
   );

@@ -1,13 +1,13 @@
-import axios from "axios";
 import { authApi } from "@/api/authApi";
 import { API_URL } from "@/api/instanceApi";
 import { REFRESH_TOKEN } from "@/components/constants/localStorageValues";
+import { addAsyncBuilderCases, getAsyncDataStatus, initAsyncParticle } from "@/utils";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 import { createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 import { createAppAsyncThunk } from "../../redux";
-import { addAsyncBuilderCases, getAsyncDataStatus, initAsyncParticle } from "@/utils";
-import type { AsyncParticle, SliceThunk } from "@/utils";
 import type { AuthData, Token, UserRegistration } from "@/types/auth";
+import type { AsyncParticle, SliceThunk } from "@/utils";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface InitialStateData {

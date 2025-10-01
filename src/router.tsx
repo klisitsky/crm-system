@@ -7,6 +7,7 @@ import {
   PROFILE_PATH,
   REG_PATH,
   TODOS_PATH,
+  USERS_PATH,
 } from "@/components/constants/paths";
 import { AppLayout } from "./components/AppLayout/AppLayout";
 import { AuthRoutes } from "@/pages/AuthPage/AuthPage";
@@ -16,6 +17,8 @@ import { TodoListPage } from "@/pages/TodoListPage/todolistPage";
 import { createBrowserRouter, Navigate } from "react-router";
 import { LoginPage } from "@/pages/LoginPage/LoginPage";
 import { SignUpPage } from "@/pages/SignupPage/SignupPage";
+import { UsersPage } from "@/pages/UsersPage/UsersPage";
+import { UserPage } from "@/pages/UserPage/UserPage";
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +43,14 @@ export const router = createBrowserRouter([
               {
                 path: PROFILE_PATH,
                 element: <ProfilePage />,
+              },
+              {
+                path: USERS_PATH,
+                element: <UsersPage />,
+              },
+              {
+                path: `${USERS_PATH}/:id`,
+                element: <UserPage />,
               },
             ],
           },

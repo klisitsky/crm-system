@@ -1,4 +1,8 @@
+import { usersApi } from "@/api/usersApi";
+import { useDebounce } from "@/hooks/useDebounce";
 import { formatDate } from "@/utils/formatDate";
+import { getErrorMessage } from "@/utils/getErrorMessage";
+import { isEqualTwoArrays } from "@/utils/isEqualTwoArrays";
 import {
   CheckOutlined,
   CloseOutlined,
@@ -6,30 +10,18 @@ import {
   SearchOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import {
-  Button,
-  Card,
-  Checkbox,
-  Flex,
-  notification,
-  Space,
-  Switch,
-  Table,
-  Tag,
-  Typography,
-} from "antd";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { usersApi } from "@/api/usersApi";
-import { isEqualTwoArrays } from "@/utils/isEqualTwoArrays";
-import { getErrorMessage } from "@/utils/getErrorMessage";
-import type { Roles, User, UserFilters, UsersMetaInfo } from "@/types/users";
-import type { CheckboxOptionType, TableProps } from "antd";
-import type { ChangeEvent, ReactNode } from "react";
-import type { LoadingStatus } from "@/types/common";
-import { CustomModal } from "@/components/CustomModal/CustomModal";
-import Modal from "antd/lib/modal";
+import { Button, Card, Checkbox, Flex, notification, Switch, Table, Tag, Typography } from "antd";
+import { Empty, Input, Select } from "antd/lib";
 import Popconfirm from "antd/lib/popconfirm";
-import { Empty, Input } from "antd/lib";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAppSelector } from "@/redux";
+import { selectProfileRequestData } from "@/selectors.ts/profileSelectors";
+import { Link } from "react-router-dom";
+import { USERS_PATH } from "@/components/constants/paths";
+import type { CheckboxOptionType, TableProps } from "antd";
+import type { Roles, User, UserFilters } from "@/types/users";
+import type { LoadingStatus } from "@/types/common";
+import type { ChangeEvent, ReactNode } from "react";
 
 interface UserWithKey extends User {
   key: React.Key;
@@ -46,6 +38,7 @@ type ExtraColumnPropsMap = Record<string, CustomizeCellComponents>;
 
 interface CellProps {
   record: User;
+  isAdminRole?: boolean;
   toggleEditMode: () => void;
 }
 
@@ -60,31 +53,38 @@ interface EditableCellProps extends CustomizeCellComponents {
   dataIndex: keyof UserWithKey;
   record: UserWithKey;
   isLoading: boolean;
+  isAdminRole: boolean;
   onUpdate: () => void;
 }
 
-const isAdmin = (record: User): boolean => {
+const isAdminUser = (record: User): boolean => {
   return record.id === 1 || record.id === 2;
 };
 
 export const UsersPage = () => {
+  const { data: profileData } = useAppSelector(selectProfileRequestData);
+  const isAdminRole = profileData?.roles.includes("ADMIN");
+
   const [usersData, setUsersData] = useState<User[]>([]);
   const [totalUsersAmount, setTotalUsersAmount] = useState<number>(0);
-  const [userFilters, setUserFilters] = useState<UserFilters>({});
+  const [userFilters, setUserFilters] = useState<UserFilters>({ limit: 20, page: 0 });
+  const [search, setSearch] = useState<string>("");
+  const debouncedSearch = useDebounce(search);
 
   const [appError, setAppError] = useState<string>("");
   const [api, contextHolder] = notification.useNotification();
 
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>("idle");
-  const isPending = loadingStatus === "pending";
-
-  const [openModal, setOpenModal] = useState<boolean>(false);
+  const isLoading = loadingStatus === "pending";
 
   const fetchUsers = useCallback(async () => {
     setAppError(() => "");
     try {
       setLoadingStatus("pending");
-      const users = await usersApi.fetchUsers(userFilters);
+      const users = await usersApi.fetchUsers({
+        ...userFilters,
+        search: debouncedSearch ? debouncedSearch : undefined,
+      });
       const fetchingUsersData = users.data ?? [];
 
       if (!isEqualTwoArrays(usersData, fetchingUsersData)) {
@@ -96,7 +96,7 @@ export const UsersPage = () => {
       setAppError(() => getErrorMessage(err));
       setLoadingStatus(() => "failed");
     }
-  }, [userFilters]);
+  }, [userFilters, debouncedSearch]);
 
   useEffect(() => {
     if (appError) {
@@ -155,7 +155,6 @@ export const UsersPage = () => {
         const handleDeletingConfirm = async () => {
           try {
             await usersApi.deleteUser(record.id);
-            setOpenModal(false);
             fetchUsers();
           } catch (err) {
             alert(getErrorMessage(err));
@@ -165,7 +164,7 @@ export const UsersPage = () => {
         return (
           <>
             <Button type="link" icon={<UserOutlined key="user" onClick={handleMoveToUserPage} />}>
-              Перейти к профилю
+              <Link to={`${USERS_PATH}/${record.id}`}>Перейти к профилю</Link>
             </Button>
             <Popconfirm
               title={`Вы уверены, что хотите удалить пользователя ${record.username}?`}
@@ -173,14 +172,8 @@ export const UsersPage = () => {
               okText="Да"
               cancelText="Нет"
             >
-              {!isAdmin(record) && (
-                <Button
-                  type="link"
-                  icon={<DeleteFilled key="delete" />}
-                  onClick={() => {
-                    setOpenModal(true);
-                  }}
-                />
+              {!isAdminUser(record) && isAdminRole && (
+                <Button type="link" icon={<DeleteFilled key="delete" />} />
               )}
             </Popconfirm>
           </>
@@ -212,7 +205,8 @@ export const UsersPage = () => {
         editable: col.editable,
         dataIndex: col.dataIndex,
         title: col.title,
-        isLoading: isPending,
+        isLoading,
+        isAdminRole,
         onUpdate: fetchUsers,
         ViewCell: extraColumnPropsMap[col.dataIndex].ViewCell,
         EditorCell: extraColumnPropsMap[col.dataIndex].EditorCell,
@@ -242,25 +236,42 @@ export const UsersPage = () => {
       return { ...user, key: user.id };
     });
   }, [usersData]);
-  console.log(userFilters.page);
 
   return (
     <>
       <Card>
         <Typography.Title level={2}>Управление пользователями</Typography.Title>
-        <Input
-          placeholder="Поиск по имени или почте..."
-          addonBefore={<SearchOutlined />}
-          style={{ width: "400px", marginBottom: "20px" }}
-          value={userFilters.search}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => {
-            setUserFilters({
-              ...userFilters,
-              search: e.currentTarget.value,
-              page: e.currentTarget.value ? 0 : undefined,
-            });
-          }}
-        />
+        <Flex justify="space-between">
+          <Input
+            placeholder="Поиск по имени или почте..."
+            addonBefore={<SearchOutlined />}
+            style={{ width: "400px", marginBottom: "20px" }}
+            value={search}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              setSearch(e.currentTarget.value);
+            }}
+          />
+          <Select
+            defaultValue="all"
+            style={{ width: 180 }}
+            onChange={(e: string) => {
+              const selectValuesMap: Record<string, boolean | undefined> = {
+                all: undefined,
+                blocked: true,
+                unblocked: false,
+              };
+              setUserFilters({
+                ...userFilters,
+                isBlocked: selectValuesMap[e],
+              });
+            }}
+            options={[
+              { value: "all", label: "Все" },
+              { value: "blocked", label: "Заблокированные" },
+              { value: "unblocked", label: "Активные" },
+            ]}
+          />
+        </Flex>
         <Table<UserWithKey>
           columns={columns as ColumnTypes}
           bordered
@@ -293,6 +304,7 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
   dataIndex,
   record,
   isLoading,
+  isAdminRole,
   onUpdate,
   EditorCell,
   ViewCell,
@@ -309,20 +321,26 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
         key={key}
         onUpdate={onUpdate}
         isLoading={isLoading}
+        isAdminRole={isAdminRole}
         toggleEditMode={() => setEditMode(false)}
         record={restRecordProps}
       />
     ) : (
-      <ViewCell key={key} toggleEditMode={() => setEditMode(true)} record={restRecordProps} />
+      <ViewCell
+        key={key}
+        isAdminRole={isAdminRole}
+        toggleEditMode={() => setEditMode(true)}
+        record={restRecordProps}
+      />
     );
   }
 
   return <td {...restProps}>{childNode}</td>;
 };
 
-const RolesViewCell = ({ record, toggleEditMode }: CellProps) => {
+const RolesViewCell = ({ record, toggleEditMode, isAdminRole }: CellProps) => {
   const startEdit = () => {
-    if (!isAdmin(record)) {
+    if (!isAdminUser(record) && isAdminRole) {
       toggleEditMode();
     }
   };
@@ -349,7 +367,7 @@ const RolesViewCell = ({ record, toggleEditMode }: CellProps) => {
 
 const IsBlockedViewCell = ({ record, toggleEditMode }: CellProps) => {
   const startEdit = () => {
-    if (!isAdmin(record)) {
+    if (!isAdminUser(record)) {
       toggleEditMode();
     }
   };
@@ -357,7 +375,7 @@ const IsBlockedViewCell = ({ record, toggleEditMode }: CellProps) => {
   return (
     <Button type="text" onClick={startEdit}>
       <Tag color={record.isBlocked ? "volcano" : "green"}>
-        {record.isBlocked ? "Заблокирован" : "Не заблокирован"}
+        {record.isBlocked ? "Заблокирован" : "Активный"}
       </Tag>
     </Button>
   );
