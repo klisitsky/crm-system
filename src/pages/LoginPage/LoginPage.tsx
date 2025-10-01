@@ -13,10 +13,10 @@ type FormInitialValuesKeys = keyof AuthData;
 
 export const LoginPage = () => {
   const dispatch = useAppDispatch();
-  const { error, status } = useAppSelector(selectAuthRequestData);
+  const { status, data } = useAppSelector(selectAuthRequestData);
 
   const handleLogin = async (formValues: Record<FormInitialValuesKeys, string>) => {
-    await dispatch(loginUser(formValues)).unwrap();
+    await dispatch(loginUser(formValues)); 
   };
 
   return (
@@ -26,7 +26,7 @@ export const LoginPage = () => {
           Вход
         </Title>
       </Flex>
-      {error && <Alert message={error} type="error" style={{ marginBottom: "15px" }} />}
+      {data?.loginError && <Alert message={data?.loginError} type="error" style={{ marginBottom: "15px" }} />}
       <CustomForm id="loginForm" callback={handleLogin} disabled={status.isPending}>
         <Form.Item name="login" label="Логин" layout="vertical">
           <Input prefix={<UserOutlined />} placeholder="Username" />

@@ -1,13 +1,13 @@
 import Title from "antd/es/typography/Title";
-import { CustomForm } from "../../components/CustomForm/CustomForm";
 import { AUTH_PATH, LOGIN_PATH } from "@/components/constants/paths";
 import { authSlice, signUpUser } from "@/pages/AuthPage/AuthSlice";
-import { selectAuthRequestData } from "../../selectors.ts/authSelectors";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Alert, Button, Divider, Flex, Form, Input, Result } from "antd";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
+import { CustomForm } from "../../components/CustomForm/CustomForm";
 import { useAppDispatch, useAppSelector } from "../../redux";
+import { selectAuthRequestData } from "../../selectors.ts/authSelectors";
 import type { UserRegistration } from "@/types/auth";
 
 export type UserRegistrationKeys = keyof UserRegistration;
@@ -39,15 +39,12 @@ export const SignUpPage = () => {
     };
   }, [timer, data, dispatch, navigate]);
 
-  const handleSignUpUser = useCallback(
-    async ({
-      confirmPassword,
-      ...restFormValues
-    }: Record<UserRegistrationKeys | "confirmPassword", string>) => {
-      await dispatch(signUpUser(restFormValues)).unwrap();
-    },
-    [dispatch]
-  );
+  const handleSignUpUser = async ({
+    confirmPassword,
+    ...restFormValues
+  }: Record<UserRegistrationKeys | "confirmPassword", string>) => {
+    await dispatch(signUpUser(restFormValues));
+  };
 
   const handleRedirectToLogin = () => {
     navigate(AUTH_PATH, { replace: true });
@@ -71,7 +68,9 @@ export const SignUpPage = () => {
           Регистрация
         </Title>
       </Flex>
-      {data?.signUpError && <Alert message={data?.signUpError} type="error" style={{ marginBottom: "15px" }} />}
+      {data?.signUpError && (
+        <Alert message={data?.signUpError} type="error" style={{ marginBottom: "15px" }} />
+      )}
       <CustomForm id="signUpForm" callback={handleSignUpUser} disabled={status.isPending}>
         <Form.Item
           name="username"

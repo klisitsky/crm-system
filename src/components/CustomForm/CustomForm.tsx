@@ -3,7 +3,7 @@ import { Form } from "antd";
 import type { ReactNode } from "react";
 import type { RequiredMark } from "antd/lib/form/Form";
 
-interface TodoForm {
+interface CustomForm {
   children: ReactNode;
   id: string;
   callback: (values: Record<string, string>) => Promise<void>;
@@ -13,7 +13,7 @@ interface TodoForm {
   onValuesChange?: (changedValues: Record<string, string | undefined>, allValues: Record<string, string | undefined>) => void;
 }
 
-export const CustomForm: React.FC<TodoForm> = memo(
+export const CustomForm: React.FC<CustomForm> = memo(
   ({ id, initialValues, callback, children, disabled, requiredMark, onValuesChange }) => {
     const [form] = Form.useForm();
 
