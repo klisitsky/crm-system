@@ -19,6 +19,7 @@ import { LoginPage } from "@/pages/LoginPage/LoginPage";
 import { SignUpPage } from "@/pages/SignupPage/SignupPage";
 import { UsersPage } from "@/pages/UsersPage/UsersPage";
 import { UserPage } from "@/pages/UserPage/UserPage";
+import { UserRightsProtectedRoutes } from "./components/UserRightsProtectedRoutes/UserRightsProtectedRoutes";
 
 export const router = createBrowserRouter([
   {
@@ -45,12 +46,17 @@ export const router = createBrowserRouter([
                 element: <ProfilePage />,
               },
               {
-                path: USERS_PATH,
-                element: <UsersPage />,
-              },
-              {
-                path: `${USERS_PATH}/:id`,
-                element: <UserPage />,
+                element: <UserRightsProtectedRoutes />,
+                children: [
+                  {
+                    path: USERS_PATH,
+                    element: <UsersPage />,
+                  },
+                  {
+                    path: `${USERS_PATH}/:id`,
+                    element: <UserPage />,
+                  },
+                ],
               },
             ],
           },

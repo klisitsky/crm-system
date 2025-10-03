@@ -22,6 +22,7 @@ import type { CheckboxOptionType, TableProps } from "antd";
 import type { Roles, User, UserFilters } from "@/types/users";
 import type { LoadingStatus } from "@/types/common";
 import type { ChangeEvent, ReactNode } from "react";
+import { useErrorNotification } from "@/hooks/useAppError";
 
 interface UserWithKey extends User {
   key: React.Key;
@@ -72,7 +73,7 @@ export const UsersPage = () => {
   const debouncedSearch = useDebounce(search);
 
   const [appError, setAppError] = useState<string>("");
-  const [api, contextHolder] = notification.useNotification();
+  const contextHolder = useErrorNotification(appError);
 
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>("idle");
   const isLoading = loadingStatus === "pending";
@@ -97,12 +98,6 @@ export const UsersPage = () => {
       setLoadingStatus(() => "failed");
     }
   }, [userFilters, debouncedSearch]);
-
-  useEffect(() => {
-    if (appError) {
-      api["error"]({ message: appError, placement: "bottomLeft" });
-    }
-  }, [appError, api]);
 
   useEffect(() => {
     fetchUsers();
@@ -150,8 +145,6 @@ export const UsersPage = () => {
       title: "",
       dataIndex: "actions",
       render: (_, record) => {
-        const handleMoveToUserPage = () => {};
-
         const handleDeletingConfirm = async () => {
           try {
             await usersApi.deleteUser(record.id);
@@ -163,7 +156,7 @@ export const UsersPage = () => {
 
         return (
           <>
-            <Button type="link" icon={<UserOutlined key="user" onClick={handleMoveToUserPage} />}>
+            <Button type="link" icon={<UserOutlined key="user"/>}>
               <Link to={`${USERS_PATH}/${record.id}`}>Перейти к профилю</Link>
             </Button>
             <Popconfirm

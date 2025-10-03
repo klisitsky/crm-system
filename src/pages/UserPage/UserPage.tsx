@@ -4,7 +4,6 @@ import Button from "antd/es/button/button";
 import Flex from "antd/es/flex";
 import Form from "antd/es/form";
 import Input from "antd/es/input";
-import notification from "antd/es/notification";
 import { usersApi } from "@/api/usersApi";
 import { CustomForm } from "@/components/CustomForm/CustomForm";
 import { getErrorMessage } from "@/utils/getErrorMessage";
@@ -12,6 +11,7 @@ import { Card } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { UserInfo } from "@/components/UserInfo/UserInfo";
+import { useErrorNotification } from "@/hooks/useAppError";
 import type { LoadingStatus } from "@/types/common";
 import type { User, UserRequest } from "@/types/users";
 
@@ -25,7 +25,7 @@ export const UserPage = () => {
   const [editMode, setEditMode] = useState<boolean>();
 
   const [appError, setAppError] = useState<string>("");
-  const [api, contextHolder] = notification.useNotification();
+  const contextHolder = useErrorNotification(appError);
 
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>("idle");
   const isLoading = loadingStatus === "pending";
@@ -56,12 +56,6 @@ export const UserPage = () => {
   useEffect(() => {
     fetchUser();
   }, [fetchUser]);
-
-  useEffect(() => {
-    if (appError) {
-      api["error"]({ message: appError, placement: "bottomLeft" });
-    }
-  }, [appError, api]);
 
   return (
     <>

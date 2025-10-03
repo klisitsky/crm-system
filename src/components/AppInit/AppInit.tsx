@@ -6,33 +6,43 @@ import { REFRESH_TOKEN } from "@/components/constants/localStorageValues";
 import { checkAuth } from "@/pages/AuthPage/AuthSlice";
 import { Outlet } from "react-router-dom";
 import { Flex, notification, Spin } from "antd/lib";
+import { fetchProfile } from "@/pages/ProfilePage/profileSlice";
+import { selectProfileRequestData } from "@/selectors.ts/profileSelectors";
 
 export const AppInit = () => {
   const dispatch = useAppDispatch();
-
   const [api, contextHolder] = notification.useNotification();
-  const { error, status } = useAppSelector(selectAuthRequestData);
+  
+  const { error: authError, status: authStatus } = useAppSelector(selectAuthRequestData);
+  const { error: profileError, status: profileStatus } = useAppSelector(selectProfileRequestData);
+
+  const isLoading = authStatus.isPending || profileStatus.isPending;
 
   useEffect(() => {
     if (localStorage.getItem(REFRESH_TOKEN)) {
       dispatch(checkAuth());
     }
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
-    if (error) {
-      api["error"]({ message: error, placement: "bottomLeft" });
-    }
-  }, [error, api]);
+    dispatch(fetchProfile());
+  }, []);
 
-  return status.isPending ? (
-    <Flex justify="center">
-      <Spin size="large" indicator={<LoadingOutlined spin />} />
-    </Flex>
-  ) : (
+  useEffect(() => {
+    if (authError || profileError) {
+      api["error"]({ message: authError || profileError, placement: "bottomLeft" });
+    }
+  }, [authError, profileError, api]);
+
+  return (
     <>
+      {isLoading && (
+        <Flex justify="center">
+          <Spin size="large" indicator={<LoadingOutlined spin />} />
+        </Flex>
+      )}
       <Outlet />
       {contextHolder}
     </>
   );
-}
+};

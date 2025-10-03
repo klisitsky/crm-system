@@ -1,12 +1,13 @@
+import { todosApi } from "@/api/todosApi";
 import { AddTodoForm } from "@/components/AddTodoForm/AddTodoForm";
 import { TODOS_UPDATE_TIME } from "@/components/constants/todos";
 import { TodosFilter } from "@/components/TodosFilter/TodosFilter";
 import { TodosList } from "@/components/TodosList/TodosList";
-import { Col, notification, Row } from "antd";
-import { useCallback, useEffect, useState } from "react";
+import { useErrorNotification } from "@/hooks/useAppError";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 import { isEqualTwoArrays } from "@/utils/isEqualTwoArrays";
-import { todosApi } from "@/api/todosApi";
+import { Col, Row } from "antd";
+import { useCallback, useEffect, useState } from "react";
 import type { LoadingStatus } from "@/types/common";
 import type { FilterStatus, Todo, TodoInfo } from "@/types/todos";
 
@@ -20,18 +21,13 @@ export const TodoListPage: React.FC = () => {
   const [filterStatus, setfilterStatus] = useState<FilterStatus>("all");
 
   const [appError, setAppError] = useState<string>("");
-  const [api, contextHolder] = notification.useNotification();
-
+  const contextHolder = useErrorNotification(appError);
+  
   const [isUpdateMode, setIsUpdateMode] = useState<boolean>(true);
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>("idle");
 
   const isPending = loadingStatus === "pending";
 
-  useEffect(() => {
-    if (appError) {
-      api["error"]({ message: appError, placement: "bottomLeft" });
-    }
-  }, [appError, api]);
 
   const fetchTodosByFilter = useCallback(async () => {
     setAppError(() => "");

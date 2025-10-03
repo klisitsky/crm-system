@@ -1,15 +1,15 @@
 import { AUTH_PATH, LOGIN_PATH } from "@/components/constants/paths";
-import { Navigate, Outlet, useLocation } from "react-router";
 import { useAppSelector } from "@/redux";
 import { selectAuthRequestData } from "@/selectors.ts/authSelectors";
+import { Navigate, Outlet, useLocation } from "react-router";
 
 export const AppProtectedRoutes = () => {
-  const { data } = useAppSelector(selectAuthRequestData);
   const location = useLocation();
+  const { data: authData } = useAppSelector(selectAuthRequestData);
 
-  if (!data?.isAuthorization) {
-    return <Navigate to={`${AUTH_PATH}/${LOGIN_PATH}`} state={{ from: location }} replace />;
+  if (authData?.isAuthorization) {
+    return <Outlet />;
   } else {
-    return <Outlet />
+    return <Navigate to={`${AUTH_PATH}/${LOGIN_PATH}`} state={{ from: location }} replace />;
   }
 };

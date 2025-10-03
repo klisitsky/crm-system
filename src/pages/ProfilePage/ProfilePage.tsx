@@ -1,30 +1,26 @@
+import Card from "antd/es/card";
 import { UserInfo } from "@/components/UserInfo/UserInfo";
+import { useErrorNotification } from "@/hooks/useAppError";
 import { fetchProfile } from "@/pages/ProfilePage/profileSlice";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { selectProfileRequestData } from "@/selectors.ts/profileSelectors";
-import { notification } from "antd";
 import { useEffect } from "react";
-
 
 export const ProfilePage = () => {
   const dispatch = useAppDispatch();
   const { data: profileData, error } = useAppSelector(selectProfileRequestData);
 
-  const [api, contextHolder] = notification.useNotification();
+  const contextHolder = useErrorNotification(error);
 
   useEffect(() => {
     dispatch(fetchProfile());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (error) {
-      api["error"]({ message: error, placement: "bottomLeft" });
-    }
-  }, [error, api]);
+  }, []);
 
   return (
     <>
-      <UserInfo data={profileData}/>
+      <Card title="Личные данные" variant="borderless" style={{ width: 400 }}>
+        <UserInfo data={profileData} />
+      </Card>
       {contextHolder}
     </>
   );
