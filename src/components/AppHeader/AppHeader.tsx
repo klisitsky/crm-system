@@ -1,8 +1,8 @@
-import { logOutUser } from "@/pages/AuthPage/AuthSlice";
-import { Button, Flex } from "antd";
-import { Header } from "antd/es/layout/layout";
+import { logOutUser } from "../../slices/AuthSlice";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { selectAuthRequestData } from "@/selectors.ts/authSelectors";
+import { Button, Flex } from "antd";
+import { Header } from "antd/es/layout/layout";
 
 export const AppHeader = () => {
   const dispatch = useAppDispatch();

@@ -1,22 +1,23 @@
-import LoadingOutlined from "@ant-design/icons/lib/icons/LoadingOutlined";
+import { REFRESH_TOKEN } from "@/components/constants/localStorageValues";
+import { checkAuth } from "../../slices/AuthSlice";
+import { fetchProfile } from "../../slices/profileSlice";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { selectAuthRequestData } from "@/selectors.ts/authSelectors";
-import { useEffect } from "react";
-import { REFRESH_TOKEN } from "@/components/constants/localStorageValues";
-import { checkAuth } from "@/pages/AuthPage/AuthSlice";
-import { Outlet } from "react-router-dom";
-import { Flex, notification, Spin } from "antd/lib";
-import { fetchProfile } from "@/pages/ProfilePage/profileSlice";
 import { selectProfileRequestData } from "@/selectors.ts/profileSelectors";
+import { notification } from "antd/lib";
+import { useEffect } from "react";
+import { Outlet } from "react-router-dom";
 
 export const AppInit = () => {
   const dispatch = useAppDispatch();
   const [api, contextHolder] = notification.useNotification();
-  
-  const { error: authError, status: authStatus } = useAppSelector(selectAuthRequestData);
-  const { error: profileError, status: profileStatus } = useAppSelector(selectProfileRequestData);
 
-  const isLoading = authStatus.isPending || profileStatus.isPending;
+  const {
+    data: authData,
+    error: authError,
+  } = useAppSelector(selectAuthRequestData);
+  const { error: profileError } = useAppSelector(selectProfileRequestData);
+
 
   useEffect(() => {
     if (localStorage.getItem(REFRESH_TOKEN)) {
@@ -24,9 +25,12 @@ export const AppInit = () => {
     }
   }, []);
 
+
   useEffect(() => {
-    dispatch(fetchProfile());
-  }, []);
+    if (authData?.isAuthorization) {
+      dispatch(fetchProfile());
+    }
+  }, [authData?.isAuthorization]);
 
   useEffect(() => {
     if (authError || profileError) {
@@ -36,11 +40,6 @@ export const AppInit = () => {
 
   return (
     <>
-      {isLoading && (
-        <Flex justify="center">
-          <Spin size="large" indicator={<LoadingOutlined spin />} />
-        </Flex>
-      )}
       <Outlet />
       {contextHolder}
     </>

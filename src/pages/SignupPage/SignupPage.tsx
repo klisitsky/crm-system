@@ -1,6 +1,6 @@
 import Title from "antd/es/typography/Title";
 import { AUTH_PATH, LOGIN_PATH } from "@/components/constants/paths";
-import { authSlice, signUpUser } from "@/pages/AuthPage/AuthSlice";
+import { authSlice, signUpUser } from "../../slices/AuthSlice";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Alert, Button, Divider, Flex, Form, Input, Result } from "antd";
 import { useEffect, useState } from "react";

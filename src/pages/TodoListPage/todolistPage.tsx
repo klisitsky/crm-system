@@ -18,6 +18,7 @@ export const TodoListPage: React.FC = () => {
     inWork: 0,
     completed: 0,
   });
+  
   const [filterStatus, setfilterStatus] = useState<FilterStatus>("all");
 
   const [appError, setAppError] = useState<string>("");

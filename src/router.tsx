@@ -10,7 +10,7 @@ import {
   USERS_PATH,
 } from "@/components/constants/paths";
 import { AppLayout } from "./components/AppLayout/AppLayout";
-import { AuthRoutes } from "@/pages/AuthPage/AuthPage";
+import { AuthRoutes } from "./components/AuthRoutes/AuthRoutes";
 import { ErrorPage } from "@/pages/ErrorPage/ErrorPage";
 import { ProfilePage } from "@/pages/ProfilePage/ProfilePage";
 import { TodoListPage } from "@/pages/TodoListPage/todolistPage";
@@ -28,15 +28,15 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        index: true,
-        element: <Navigate to={TODOS_PATH} replace />,
-      },
-      {
         element: <AppProtectedRoutes />,
         children: [
           {
             element: <AppLayout />,
             children: [
+              {
+                index: true,
+                element: <Navigate to={TODOS_PATH} replace />,
+              },
               {
                 path: TODOS_PATH,
                 element: <TodoListPage />,

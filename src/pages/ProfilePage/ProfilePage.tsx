@@ -1,7 +1,7 @@
 import Card from "antd/es/card";
 import { UserInfo } from "@/components/UserInfo/UserInfo";
 import { useErrorNotification } from "@/hooks/useAppError";
-import { fetchProfile } from "@/pages/ProfilePage/profileSlice";
+import { fetchProfile } from "../../slices/profileSlice";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { selectProfileRequestData } from "@/selectors.ts/profileSelectors";
 import { useEffect } from "react";
@@ -11,7 +11,7 @@ export const ProfilePage = () => {
   const { data: profileData, error } = useAppSelector(selectProfileRequestData);
 
   const contextHolder = useErrorNotification(error);
-
+  
   useEffect(() => {
     dispatch(fetchProfile());
   }, []);

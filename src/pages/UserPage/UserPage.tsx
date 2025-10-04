@@ -55,7 +55,7 @@ export const UserPage = () => {
 
   useEffect(() => {
     fetchUser();
-  }, [fetchUser]);
+  }, []);
 
   return (
     <>

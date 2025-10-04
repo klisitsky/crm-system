@@ -1,7 +1,7 @@
 import Title from "antd/es/typography/Title";
 import { REG_PATH } from "@/components/constants/paths";
 import { CustomForm } from "@/components/CustomForm/CustomForm";
-import { loginUser } from "@/pages/AuthPage/AuthSlice";
+import { loginUser } from "../../slices/AuthSlice";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { selectAuthRequestData } from "@/selectors.ts/authSelectors";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
