@@ -21,7 +21,7 @@ export const UserPage = () => {
   const { id = "" } = useParams<{ id: string }>();
   const [userData, setUserData] = useState<User>();
   const [changedFormValues, setChangedFormValues] = useState<UserRequest>({});
-  
+
   const [editMode, setEditMode] = useState<boolean>();
 
   const [appError, setAppError] = useState<string>("");
@@ -44,12 +44,16 @@ export const UserPage = () => {
   }, [id]);
 
   const handleUpdateUserData = async () => {
-    try {
-      await usersApi.updateUserData(id, changedFormValues);
+    if (Object.keys(changedFormValues).length) {
+      try {
+        await usersApi.updateUserData(id, changedFormValues);
+        setEditMode(false);
+        fetchUser();
+      } catch (err) {
+        setAppError(getErrorMessage(err));
+      }
+    } else {
       setEditMode(false);
-      fetchUser();
-    } catch (err) {
-      setAppError(getErrorMessage(err));
     }
   };
 
