@@ -1,8 +1,14 @@
-import "./App.css";
-import { TodolistPage } from "./pages/TodolistPage/todolistPage";
+import "@/App.css";
+import { Provider } from "react-redux";
+import { RouterProvider } from "react-router";
+import { router } from "@/router";
+import { store } from "@/store";
 
 function App() {
-  return <><TodolistPage/></>;
+  return (
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
+  );
 }
-
 export default App;

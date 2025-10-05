@@ -1,11 +1,13 @@
-import { isAxiosError } from "axios";
+import axios from "axios";
 
-export const getErrorMessage = (err: unknown) => {
-  if (isAxiosError<string>(err)) {
-    return err.response?.data ?? "Network error";
+export const getErrorMessage = (err: unknown): string => {
+  let errorMessage = "Some error occurred";
+  if (axios.isAxiosError(err)) {
+    errorMessage = err.response?.data || err?.message || errorMessage;
   } else if (err instanceof Error) {
-    return err.message;
+    errorMessage = `Native error: ${err.message}`;
   } else {
-    return "Unknown error";
+    errorMessage = JSON.stringify(err);
   }
+  return errorMessage;
 };
